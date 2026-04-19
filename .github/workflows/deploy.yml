@@ -1,0 +1,43 @@
+name: Deploy Blog with Password Page
+
+# 推送到 main 分支就自动运行
+on:
+  push:
+    branches: [main]
+
+# 给够权限（必须写）
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. 安装 mdbook
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: latest
+
+      # 2. 编译 blog-src 输出到 build
+      - name: Build mdBook
+        run: |
+          cd blog-src
+          mdbook build -d ./build
+
+      # 3. 创建临时文件夹 → 复制文件
+      - name: Prepare deploy files
+        run: |
+          mkdir -p gh-page-files                            # 创建临时目录
+          cp    ./blog-src/index.html ./gh-page-files/      # 复制密码页
+          cp -r ./blog-src/build      ./gh-page-files/a     # 复制mdbook生成的静态网页
+
+      # 4. 发布临时文件夹到 gh-pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-page-files  # 只发布这个干净的目录
