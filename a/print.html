@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-4b4d7d34.js";
+            window.path_to_searchindex_js = "searchindex-7b8fa31d.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-99872d12.js"></script>
+        <script src="toc-9d6d3bf5.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -306,6 +306,10 @@ build-dir = "specific-output-path"
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="图片格式"><a class="header" href="#图片格式">图片格式</a></h1>
+<p>本博客中插入的图片统一使用 WebP 格式。</p>
+<p>使用在线网站 <a href="https://squoosh.app/">https://squoosh.app/</a> 进行格式转换。</p>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="linux-document-list"><a class="header" href="#linux-document-list">Linux Document List</a></h1>
 <h2 id="环境安装"><a class="header" href="#环境安装">环境安装</a></h2>
 <ul>
@@ -361,6 +365,58 @@ sudo apt upgrade -y
 </code></pre>
 </li>
 </ol>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ch584-引脚笔记"><a class="header" href="#ch584-引脚笔记">CH584 引脚笔记</a></h1>
+<h2 id="电源引脚"><a class="header" href="#电源引脚">电源引脚</a></h2>
+<ul>
+<li>
+<p><strong>VDCID</strong></p>
+<blockquote>
+<p>内部数字电路 LDO 调整器的电源输入，需外接退耦电容。</p>
+<p>启用 DC-DC 时建议 4.7uF（支持 1uF～10uF，容值小 DC-DC效率略有下降），不启用 DC-DC 时建议不小于 1uF。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>VDCIA</strong></p>
+<blockquote>
+<p>内部模拟电路 LDO 调整器的电源输入，需外接退耦电容。</p>
+<p>建议 0.1uF，直连 VDCID。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>VSW</strong></p>
+<blockquote>
+<p>DC-DC 开关输出，启用 DC-DC 时必须贴近引脚串接电感连接 VDCID，建议用 10uH 电感（支持 4.7uH～22uH，感值小 DC-DC 效率略有下降），不启用 DC-DC 时可以直连VDCID。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>VDD33 / VIO33</strong></p>
+<p><em>这两个引脚在芯片引出时合并为一个引脚了</em></p>
+<ul>
+<li><strong>VDD33</strong></li>
+</ul>
+<blockquote>
+<p>DC-DC 或电池电源输入，需贴近引脚外接退耦电容。</p>
+<p>启用时建议 2.2uF 或 1uF，不启用 DCDC 时建议不小于 1uF。</p>
+</blockquote>
+<ul>
+<li><strong>VIO33</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>I/O 电源输入。</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p><strong>VINTA</strong></p>
+<blockquote>
+<p>内部模拟电路的电源节点，需贴近引脚外接退耦电容。</p>
+<p>不启用 DC-DC 时建议 0.47uF；启用 DC-DC 时建议不小于0.47uF（支持 0.47uF～2.2uF，容值大功耗略大）。</p>
+</blockquote>
+<p><img src="electronic-docs/mcu-wch/pics/pic-01.webp" alt="CH584 电源引脚"></p>
+</li>
+</ul>
 
                     </main>
 
