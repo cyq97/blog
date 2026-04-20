@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - blog</title>
-        <base href="/">
+        <title>如何使用mdbook - blog</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="favicon-8114d1fc.png">
-        <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-2459343d.css">
-        <link rel="stylesheet" href="css/chrome-ae938929.css">
-        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-4b4d7d34.js";
+            window.path_to_searchindex_js = "../searchindex-4b4d7d34.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-99872d12.js"></script>
+        <script src="../toc-99872d12.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +105,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +140,7 @@
                     <h1 class="menu-title">blog</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
 
@@ -175,14 +174,145 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="如何使用-mdbook"><a class="header" href="#如何使用-mdbook">如何使用 mdbook</a></h1>
+<blockquote>
+<p>官方文档：<a href="https://rust-lang.github.io/mdBook/">mdBook Documentation</a></p>
+<p><code>https://rust-lang.github.io/mdBook/</code></p>
+</blockquote>
+<h2 id="配置文件"><a class="header" href="#配置文件">配置文件</a></h2>
+<p><code>book.toml</code></p>
+<pre><code class="language-toml"># 设置 mdbook build 的输出路径
+[build]
+build-dir = "specific-output-path"
+</code></pre>
+<h2 id="自动编译文档"><a class="header" href="#自动编译文档">自动编译文档</a></h2>
+<p>打开两个终端：</p>
+<ul>
+<li>第一个运行 <code>mdbook serve</code>，此命令会监控 <code>src</code> 目录中的变化，每次发生变化时都会重新构建。</li>
+<li>第二个运行 <code>mdbook watch</code>，此命令监控文件，并在修改任何文件时自动触发构建。</li>
+</ul>
+<h2 id="文档结构"><a class="header" href="#文档结构">文档结构</a></h2>
+<blockquote>
+<p>🏆🏆🏆 参见官方文档 format - summary 章节</p>
+</blockquote>
+<p>官方文档的 <code>SUMMARY.md</code> 的内容如下，这展示了一个标准的文档结构。</p>
+<pre><code class="language-markdown"># Summary
+
+[Introduction](README.md)
+
+# User guide
+
+- [Installation](guide/installation.md)
+- [Reading books](guide/reading.md)
+- [Creating a book](guide/creating.md)
+
+# Reference guide
+
+- [Command-line tool](cli/README.md)
+    - [init](cli/init.md)
+    - [build](cli/build.md)
+    - [watch](cli/watch.md)
+    - [serve](cli/serve.md)
+    - [test](cli/test.md)
+    - [clean](cli/clean.md)
+    - [completions](cli/completions.md)
+- [Format](format/README.md)
+    - [SUMMARY.md](format/summary.md)
+        - [Draft chapter]()
+    - [Configuration](format/configuration/README.md)
+        - [General](format/configuration/general.md)
+        - [Preprocessors](format/configuration/preprocessors.md)
+        - [Renderers](format/configuration/renderers.md)
+        - [Environment variables](format/configuration/environment-variables.md)
+    - [Theme](format/theme/README.md)
+        - [index.hbs](format/theme/index-hbs.md)
+        - [Syntax highlighting](format/theme/syntax-highlighting.md)
+        - [Editor](format/theme/editor.md)
+    - [MathJax support](format/mathjax.md)
+    - [mdBook-specific features](format/mdbook.md)
+    - [Markdown](format/markdown.md)
+- [Continuous integration](continuous-integration.md)
+- [For developers](for_developers/README.md)
+    - [Preprocessors](for_developers/preprocessors.md)
+    - [Alternative backends](for_developers/backends.md)
+
+-----------
+
+[Contributors](misc/contributors.md)
+
+</code></pre>
+<ol>
+<li>
+<p><strong>标题 - Title</strong></p>
+<p>这是可选的，但文档通常以标题开头，一般为 <code># Summary</code>。不过解析器会忽略它，也可以省略。</p>
+</li>
+</ol>
+<br>
+<ol start="2">
+<li>
+<p><strong>前置章节 - Prefix Chapter</strong></p>
+<p>如上面示例中的 <code>[Introduction](README.md)</code>。</p>
+<p><strong>在主编号章节之前，可以添加不进行编号的前置章节</strong>。这适用于前言、引言等内容。</p>
+<p>不过存在一些限制。前置章节<strong>不能嵌套</strong>，必须<strong>全部位于根层级</strong>。并且<strong>一旦添加了编号章节，就无法再添加前置章节</strong>。</p>
+</li>
+</ol>
+<br>
+<ol start="3">
+<li>
+<p><strong>部分标题 - Part Title</strong></p>
+<p>如上面示例中的 <code># User guide</code>、<code># Reference guide</code>。</p>
+<p>一级标题（一个<code>#</code>）可用作后续带编号章节的标题。</p>
+<p>这可用于<strong>在逻辑上分隔书籍的不同部分</strong>。</p>
+<p>标题会显示为<strong>不可点击的文本</strong>。标题为可选内容，带编号的章节可根据需要拆分为多个部分。</p>
+<p>部分标题<strong>必须是一级标题（一个<code>#</code>）</strong>，其他标题级别将被忽略。</p>
+</li>
+</ol>
+<br>
+<ol start="4">
+<li>
+<p><strong>编号章节 - Numbered Chapter</strong></p>
+<p>如上面示例中存在诸如 <code>- [xxxxx](yyyyy.md)</code> 这种格式的条目。</p>
+<p>编号章节概述了书的主要内容，并且可以嵌套，从而形成一个很好的层次结构（章节、子章节等）。</p>
+</li>
+</ol>
+<br>
+<ol start="5">
+<li>
+<p><strong>后缀章节 - Suffix Chapter</strong></p>
+<p>如上面示例中最后的 <code>[Contributors](misc/contributors.md)</code>。</p>
+<p>与前缀章节类似，后缀章节也没有编号，但它们位于带编号的章节之后。</p>
+</li>
+</ol>
+<br>
+<ol start="6">
+<li>
+<p><strong>草稿章节 - Draft chapters</strong></p>
+<p>如上面示例中的 <code>- [Draft chapter]()</code></p>
+<p>草稿章节是指<strong>没有对应文件及内容</strong>的章节。</p>
+<p>设置草稿章节的目的是标记后续待撰写的章节。也可在规划书籍结构时使用，避免在频繁调整书籍结构的过程中反复创建文件。</p>
+<p>草稿章节在 HTML 渲染器的目录中会显示为禁用链接。</p>
+<p>草稿章节的<strong>编写方式与普通章节一致，只需不填写文件路径即可</strong>。</p>
+</li>
+</ol>
+<br>
+<ol start="7">
+<li>
+<p><strong>分隔符 - Separators</strong></p>
+<p>如上面示例中的 <code>-----------</code></p>
+<p>分隔符可添加在任意其他元素之前、之间和之后。</p>
+<p>它们会在生成的目录的 HTML 渲染行中体现。</p>
+<p>分隔符是指仅由短横线组成且至少包含三个短横线的行：<code>---</code>。</p>
+</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
+                            <a rel="next prefetch" href="../linux/list.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -191,6 +321,9 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
+                    <a rel="next prefetch" href="../linux/list.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>
@@ -208,13 +341,13 @@
         </script>
 
 
-        <script src="elasticlunr-ef4e11c1.min.js"></script>
-        <script src="mark-09e88c2c.min.js"></script>
-        <script src="searcher-c2a407aa.js"></script>
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
 
-        <script src="clipboard-1626706a.min.js"></script>
-        <script src="highlight-abc7f01d.js"></script>
-        <script src="book-a0b12cfe.js"></script>
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
 
