@@ -37,7 +37,7 @@ jobs:
 
       # 4. 发布临时文件夹到 gh-pages
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-page-files  # 只发布这个干净的目录
