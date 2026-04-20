@@ -25,15 +25,15 @@ jobs:
       # 2. 编译 blog-src 输出到 build
       - name: Build mdBook
         run: |
+          mkdir -p gh-page-files  
           cd blog-src
-          mdbook build -d ./build
+          mdbook build -d ../gh-page-files/a
 
       # 3. 创建临时文件夹 → 复制文件
       - name: Prepare deploy files
         run: |
-          mkdir -p gh-page-files                            # 创建临时目录
           cp    ./blog-src/index.html ./gh-page-files/      # 复制密码页
-          cp -r ./blog-src/build      ./gh-page-files/a     # 复制mdbook生成的静态网页
+          # cp -r ./blog-src/build      ./gh-page-files/a     # 复制mdbook生成的静态网页
 
       # 4. 发布临时文件夹到 gh-pages
       - name: Deploy to GitHub Pages
