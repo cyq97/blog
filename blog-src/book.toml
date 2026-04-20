@@ -2,3 +2,6 @@
 title = "blog"
 authors = ["cyq97"]
 language = "en"
+
+[build]
+build-dir = "./a"   # 编译输出到和index.html同一个目录下的目录a下面, index.html负责跳转到a/index.html
