@@ -35,10 +35,10 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-640e0f4c.js";
+            window.path_to_searchindex_js = "../../searchindex-27ebf0ef.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-d08032f4.js"></script>
+        <script src="../../toc-72a23cfd.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -189,8 +189,9 @@
 |       |           ├── objects     # MDK-KEIL工程的Objects文件夹
 |       |           └── listings    # MDK-KEIL工程的Listings文件夹
 |       ├── src                     # 当前工程特定源码
+|       |   ├── main                # 存放主函数等
+|       |   └── mcu-device          # 存放芯片启动文件等 cmsis 标准文件和厂商提供的芯片配置程序
 |       ├── link                    # 存放链接脚本, MDK-KEIL中称为分散加载文件
-|       |   └── target_01           # MDK-KEIL工程可以有多个target, 每个target可以有各自的链接脚本
 |       └── docs                    # 当前工程的文档
 ├── tools                           # 工具软件
 └── README.md                       # 仓库自述文档
@@ -226,7 +227,9 @@
 </li>
 <li>
 <p>link</p>
-<p><em>将链接脚本直接存放到工程目录而不是mdk-arm目录，是为了方便在不同开发环境下能同一观察到链接配置，毕竟更改开发环境时各种数据的存放方式和位置我们还是不想变动的</em></p>
+<p><em>将链接脚本直接存放到工程目录而不是 mdk-arm 目录，是为了方便在不同开发环境下能同一观察到链接配置，毕竟更改开发环境时各种数据的存放方式和位置我们还是不想变动的。</em></p>
+<p><em>推荐直接将链接脚本的名字命名为 target 的名字(+文件拓展名)。</em></p>
+<p><em>很多情况下一般只有一个 target，推荐此时将这个 target 命名为 <strong>target_default</strong></em></p>
 </li>
 <li>
 <p>docs</p>

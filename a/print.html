@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-640e0f4c.js";
+            window.path_to_searchindex_js = "searchindex-27ebf0ef.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-d08032f4.js"></script>
+        <script src="toc-72a23cfd.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -433,8 +433,9 @@ sudo apt upgrade -y
 |       |           ├── objects     # MDK-KEIL工程的Objects文件夹
 |       |           └── listings    # MDK-KEIL工程的Listings文件夹
 |       ├── src                     # 当前工程特定源码
+|       |   ├── main                # 存放主函数等
+|       |   └── mcu-device          # 存放芯片启动文件等 cmsis 标准文件和厂商提供的芯片配置程序
 |       ├── link                    # 存放链接脚本, MDK-KEIL中称为分散加载文件
-|       |   └── target_01           # MDK-KEIL工程可以有多个target, 每个target可以有各自的链接脚本
 |       └── docs                    # 当前工程的文档
 ├── tools                           # 工具软件
 └── README.md                       # 仓库自述文档
@@ -470,7 +471,9 @@ sudo apt upgrade -y
 </li>
 <li>
 <p>link</p>
-<p><em>将链接脚本直接存放到工程目录而不是mdk-arm目录，是为了方便在不同开发环境下能同一观察到链接配置，毕竟更改开发环境时各种数据的存放方式和位置我们还是不想变动的</em></p>
+<p><em>将链接脚本直接存放到工程目录而不是 mdk-arm 目录，是为了方便在不同开发环境下能同一观察到链接配置，毕竟更改开发环境时各种数据的存放方式和位置我们还是不想变动的。</em></p>
+<p><em>推荐直接将链接脚本的名字命名为 target 的名字(+文件拓展名)。</em></p>
+<p><em>很多情况下一般只有一个 target，推荐此时将这个 target 命名为 <strong>target_default</strong></em></p>
 </li>
 <li>
 <p>docs</p>
@@ -492,6 +495,22 @@ sudo apt upgrade -y
 <p>虚拟文件夹是指如下所示的在 Project 区展示的文件管理方式</p>
 </blockquote>
 <p><img src="mcu/code-specification/pics/pic-01.webp" alt=""></p>
+<hr>
+<h2 id="虚拟文件夹"><a class="header" href="#虚拟文件夹">虚拟文件夹</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th></th></tr>
+</thead>
+<tbody>
+<tr><td><code>src / main</code></td><td>主函数等</td></tr>
+<tr><td><code>src / mcu-device</code></td><td>芯片启动文件等 cmsis 标准文件和厂商提供的芯片配置程序等。<br />与芯片外设几乎没有关系(时钟除外)。</td></tr>
+<tr><td><code>src / libs</code></td><td>工程在使用子模块时的一些接口、配置等文件。</td></tr>
+<tr><td><code>libs / xxxxx</code></td><td>子模块源码。</td></tr>
+<tr><td><code>docs</code></td><td>文档。</td></tr>
+</tbody>
+</table>
+</div>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="mdk5-keil工程git提交规范"><a class="header" href="#mdk5-keil工程git提交规范">MDK5-KEIL工程Git提交规范</a></h1>
 <h2 id="子模块"><a class="header" href="#子模块">子模块</a></h2>
@@ -530,6 +549,8 @@ submodule(libs/FreeRTOS): update to latest commit @8e2dc4f
 </code></pre>
 </li>
 </ol>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="arm-mcu-sdk-仓库规范"><a class="header" href="#arm-mcu-sdk-仓库规范">ARM MCU SDK 仓库规范</a></h1>
 
                     </main>
 
