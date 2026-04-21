@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>blog</title>
-        <meta name="robots" content="noindex">
+        <title>KEIL 工程目录规范 - blog</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="favicon-8114d1fc.png">
-        <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-2459343d.css">
-        <link rel="stylesheet" href="css/chrome-ae938929.css">
-        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-2459343d.css">
+        <link rel="stylesheet" href="../../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-640e0f4c.js";
+            window.path_to_searchindex_js = "../../searchindex-640e0f4c.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-d08032f4.js"></script>
+        <script src="../../toc-d08032f4.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +105,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +140,7 @@
                     <h1 class="menu-title">blog</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
 
@@ -175,250 +174,7 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="如何使用-mdbook"><a class="header" href="#如何使用-mdbook">如何使用 mdbook</a></h1>
-<blockquote>
-<p>官方文档：<a href="https://rust-lang.github.io/mdBook/">mdBook Documentation</a></p>
-<p><code>https://rust-lang.github.io/mdBook/</code></p>
-</blockquote>
-<h2 id="配置文件"><a class="header" href="#配置文件">配置文件</a></h2>
-<p><code>book.toml</code></p>
-<pre><code class="language-toml"># 设置 mdbook build 的输出路径
-[build]
-build-dir = "specific-output-path"
-</code></pre>
-<h2 id="自动编译文档"><a class="header" href="#自动编译文档">自动编译文档</a></h2>
-<p>打开两个终端：</p>
-<ul>
-<li>第一个运行 <code>mdbook serve</code>，此命令会监控 <code>src</code> 目录中的变化，每次发生变化时都会重新构建。</li>
-<li>第二个运行 <code>mdbook watch</code>，此命令监控文件，并在修改任何文件时自动触发构建。</li>
-</ul>
-<h2 id="文档结构"><a class="header" href="#文档结构">文档结构</a></h2>
-<blockquote>
-<p>🏆🏆🏆 参见官方文档 format - summary 章节</p>
-</blockquote>
-<p>官方文档的 <code>SUMMARY.md</code> 的内容如下，这展示了一个标准的文档结构。</p>
-<pre><code class="language-markdown"># Summary
-
-[Introduction](README.md)
-
-# User guide
-
-- [Installation](guide/installation.md)
-- [Reading books](guide/reading.md)
-- [Creating a book](guide/creating.md)
-
-# Reference guide
-
-- [Command-line tool](cli/README.md)
-    - [init](cli/init.md)
-    - [build](cli/build.md)
-    - [watch](cli/watch.md)
-    - [serve](cli/serve.md)
-    - [test](cli/test.md)
-    - [clean](cli/clean.md)
-    - [completions](cli/completions.md)
-- [Format](format/README.md)
-    - [SUMMARY.md](format/summary.md)
-        - [Draft chapter]()
-    - [Configuration](format/configuration/README.md)
-        - [General](format/configuration/general.md)
-        - [Preprocessors](format/configuration/preprocessors.md)
-        - [Renderers](format/configuration/renderers.md)
-        - [Environment variables](format/configuration/environment-variables.md)
-    - [Theme](format/theme/README.md)
-        - [index.hbs](format/theme/index-hbs.md)
-        - [Syntax highlighting](format/theme/syntax-highlighting.md)
-        - [Editor](format/theme/editor.md)
-    - [MathJax support](format/mathjax.md)
-    - [mdBook-specific features](format/mdbook.md)
-    - [Markdown](format/markdown.md)
-- [Continuous integration](continuous-integration.md)
-- [For developers](for_developers/README.md)
-    - [Preprocessors](for_developers/preprocessors.md)
-    - [Alternative backends](for_developers/backends.md)
-
------------
-
-[Contributors](misc/contributors.md)
-
-</code></pre>
-<ol>
-<li>
-<p><strong>标题 - Title</strong></p>
-<p>这是可选的，但文档通常以标题开头，一般为 <code># Summary</code>。不过解析器会忽略它，也可以省略。</p>
-</li>
-</ol>
-<br>
-<ol start="2">
-<li>
-<p><strong>前置章节 - Prefix Chapter</strong></p>
-<p>如上面示例中的 <code>[Introduction](README.md)</code>。</p>
-<p><strong>在主编号章节之前，可以添加不进行编号的前置章节</strong>。这适用于前言、引言等内容。</p>
-<p>不过存在一些限制。前置章节<strong>不能嵌套</strong>，必须<strong>全部位于根层级</strong>。并且<strong>一旦添加了编号章节，就无法再添加前置章节</strong>。</p>
-</li>
-</ol>
-<br>
-<ol start="3">
-<li>
-<p><strong>部分标题 - Part Title</strong></p>
-<p>如上面示例中的 <code># User guide</code>、<code># Reference guide</code>。</p>
-<p>一级标题（一个<code>#</code>）可用作后续带编号章节的标题。</p>
-<p>这可用于<strong>在逻辑上分隔书籍的不同部分</strong>。</p>
-<p>标题会显示为<strong>不可点击的文本</strong>。标题为可选内容，带编号的章节可根据需要拆分为多个部分。</p>
-<p>部分标题<strong>必须是一级标题（一个<code>#</code>）</strong>，其他标题级别将被忽略。</p>
-</li>
-</ol>
-<br>
-<ol start="4">
-<li>
-<p><strong>编号章节 - Numbered Chapter</strong></p>
-<p>如上面示例中存在诸如 <code>- [xxxxx](yyyyy.md)</code> 这种格式的条目。</p>
-<p>编号章节概述了书的主要内容，并且可以嵌套，从而形成一个很好的层次结构（章节、子章节等）。</p>
-</li>
-</ol>
-<br>
-<ol start="5">
-<li>
-<p><strong>后缀章节 - Suffix Chapter</strong></p>
-<p>如上面示例中最后的 <code>[Contributors](misc/contributors.md)</code>。</p>
-<p>与前缀章节类似，后缀章节也没有编号，但它们位于带编号的章节之后。</p>
-</li>
-</ol>
-<br>
-<ol start="6">
-<li>
-<p><strong>草稿章节 - Draft chapters</strong></p>
-<p>如上面示例中的 <code>- [Draft chapter]()</code></p>
-<p>草稿章节是指<strong>没有对应文件及内容</strong>的章节。</p>
-<p>设置草稿章节的目的是标记后续待撰写的章节。也可在规划书籍结构时使用，避免在频繁调整书籍结构的过程中反复创建文件。</p>
-<p>草稿章节在 HTML 渲染器的目录中会显示为禁用链接。</p>
-<p>草稿章节的<strong>编写方式与普通章节一致，只需不填写文件路径即可</strong>。</p>
-</li>
-</ol>
-<br>
-<ol start="7">
-<li>
-<p><strong>分隔符 - Separators</strong></p>
-<p>如上面示例中的 <code>-----------</code></p>
-<p>分隔符可添加在任意其他元素之前、之间和之后。</p>
-<p>它们会在生成的目录的 HTML 渲染行中体现。</p>
-<p>分隔符是指仅由短横线组成且至少包含三个短横线的行：<code>---</code>。</p>
-</li>
-</ol>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="图片格式"><a class="header" href="#图片格式">图片格式</a></h1>
-<p>本博客中插入的图片统一使用 WebP 格式。</p>
-<p>使用在线网站 <a href="https://squoosh.app/">https://squoosh.app/</a> 进行格式转换。</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="linux-document-list"><a class="header" href="#linux-document-list">Linux Document List</a></h1>
-<h2 id="环境安装"><a class="header" href="#环境安装">环境安装</a></h2>
-<ul>
-<li><a href="#安装-ssh-服务">安装 ssh</a></li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="安装-ssh-服务"><a class="header" href="#安装-ssh-服务">安装 SSH 服务</a></h1>
-<ol>
-<li>
-<p><strong>更新系统</strong></p>
-<pre><code class="language-shell">sudo apt update
-sudo apt upgrade -y
-</code></pre>
-</li>
-<li>
-<p><strong>检查 ssh 服务</strong></p>
-<pre><code class="language-shell">sudo systemctl status ssh
-</code></pre>
-<p>注意此命令输出信息中 <code>Active</code> 的状态，如果显示 <code>inactive (dead)</code>则表示 ssh 已经安装了但未启用，则可以执行 <em>第 6 步</em> 设置开机自动启动 ssh 服务。</p>
-</li>
-<li>
-<p><strong>安装 OpenSSH Server</strong></p>
-<p>如果显示未安装 ssh 服务，则需要执行这一步</p>
-<pre><code class="language-shell">sudo apt install openssh-server
-</code></pre>
-</li>
-<li>
-<p><strong>配置 OpenSSH Server</strong></p>
-<p>编辑 <code>/etc/ssh/sshd_config</code> 来配置 ssh</p>
-<p>常见的设置：</p>
-<ul>
-<li>Port：可以将其更改为不同的端口号以获得额外的安全性</li>
-<li>PermitRootLogin：为了安全起见，最好通过将其设置为 no 来禁用 root 登录</li>
-<li>PasswordAuthentication：如果使用公钥身份验证，请将其设置为 no</li>
-<li>AllowUsers：要限制对特定用户的 SSH 访问，请在此处添加用户名，并用空格分隔</li>
-</ul>
-</li>
-<li>
-<p><strong>重新启动 OpenSSH Server</strong></p>
-<p>如果修改了 OpenSSH Server 的配置或者刚刚才安装，执行这一步。</p>
-<pre><code class="language-shell">sudo systemctl restart ssh
-</code></pre>
-</li>
-<li>
-<p><strong>设置开机自动启动 OpenSSH Server</strong></p>
-<pre><code class="language-shell">sudo systemctl enable ssh
-</code></pre>
-</li>
-<li>
-<p><strong>ssh 远程连接这条电脑</strong></p>
-<p>可在 windows cmd 使用</p>
-<pre><code class="language-shell">ssh 用户名@机器IP
-</code></pre>
-</li>
-</ol>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="ch584-引脚笔记"><a class="header" href="#ch584-引脚笔记">CH584 引脚笔记</a></h1>
-<h2 id="电源引脚"><a class="header" href="#电源引脚">电源引脚</a></h2>
-<ul>
-<li>
-<p><strong>VDCID</strong></p>
-<blockquote>
-<p>内部数字电路 LDO 调整器的电源输入，需外接退耦电容。</p>
-<p>启用 DC-DC 时建议 4.7uF（支持 1uF～10uF，容值小 DC-DC效率略有下降），不启用 DC-DC 时建议不小于 1uF。</p>
-</blockquote>
-</li>
-<li>
-<p><strong>VDCIA</strong></p>
-<blockquote>
-<p>内部模拟电路 LDO 调整器的电源输入，需外接退耦电容。</p>
-<p>建议 0.1uF，直连 VDCID。</p>
-</blockquote>
-</li>
-<li>
-<p><strong>VSW</strong></p>
-<blockquote>
-<p>DC-DC 开关输出，启用 DC-DC 时必须贴近引脚串接电感连接 VDCID，建议用 10uH 电感（支持 4.7uH～22uH，感值小 DC-DC 效率略有下降），不启用 DC-DC 时可以直连VDCID。</p>
-</blockquote>
-</li>
-<li>
-<p><strong>VDD33 / VIO33</strong></p>
-<p><em>这两个引脚在芯片引出时合并为一个引脚了</em></p>
-<ul>
-<li><strong>VDD33</strong></li>
-</ul>
-<blockquote>
-<p>DC-DC 或电池电源输入，需贴近引脚外接退耦电容。</p>
-<p>启用时建议 2.2uF 或 1uF，不启用 DCDC 时建议不小于 1uF。</p>
-</blockquote>
-<ul>
-<li><strong>VIO33</strong></li>
-</ul>
-<blockquote>
-<ul>
-<li>I/O 电源输入。</li>
-</ul>
-</blockquote>
-</li>
-<li>
-<p><strong>VINTA</strong></p>
-<blockquote>
-<p>内部模拟电路的电源节点，需贴近引脚外接退耦电容。</p>
-<p>不启用 DC-DC 时建议 0.47uF；启用 DC-DC 时建议不小于0.47uF（支持 0.47uF～2.2uF，容值大功耗略大）。</p>
-</blockquote>
-<p><img src="electronic-docs/mcu-wch/pics/pic-01.webp" alt="CH584 电源引脚"></p>
-</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="mdk5-keil代码工程的目录规范"><a class="header" href="#mdk5-keil代码工程的目录规范">MDK5-KEIL代码工程的目录规范</a></h1>
+                        <h1 id="mdk5-keil代码工程的目录规范"><a class="header" href="#mdk5-keil代码工程的目录规范">MDK5-KEIL代码工程的目录规范</a></h1>
 <pre><code class="language-shell">code-Repository
 ├── docs                            # 仓库文档
 ├── libs                            # 子模块组成的库
@@ -486,56 +242,18 @@ sudo apt upgrade -y
 <p>build</p>
 </li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="mdk5-keil工程虚拟文件夹规范"><a class="header" href="#mdk5-keil工程虚拟文件夹规范">MDK5-KEIL工程虚拟文件夹规范</a></h1>
-<blockquote>
-<p>虚拟文件夹是指如下所示的在 Project 区展示的文件管理方式</p>
-</blockquote>
-<p><img src="mcu/code-specification/pics/pic-01.webp" alt=""></p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="mdk5-keil工程git提交规范"><a class="header" href="#mdk5-keil工程git提交规范">MDK5-KEIL工程Git提交规范</a></h1>
-<h2 id="子模块"><a class="header" href="#子模块">子模块</a></h2>
-<p><strong>固定格式</strong></p>
-<pre><code>submodule(&lt;子模块路径&gt;): &lt;操作&gt; &lt;描述&gt; @&lt;版本信息&gt;
-</code></pre>
-<br>
-<p><strong>严格规则</strong></p>
-<ol>
-<li><strong>类型固定</strong>：<code>submodule</code></li>
-<li><strong>操作仅限 3 种</strong>：<code>add</code> / <code>update</code> / <code>remove</code></li>
-<li><strong>add 必须带</strong>：初始版本（tag /hash）</li>
-<li><strong>update 必须带</strong>：目标版本（tag /hash）</li>
-<li><strong>版本格式</strong>：<code>@v1.0.0</code> 或 <code>@a1b2c3d</code></li>
-</ol>
-<br>
-<p><strong>示例</strong></p>
-<ol>
-<li>
-<p>添加子模块</p>
-<pre><code>submodule(libs/STM32_HAL): add official HAL library @v1.8.5
-
-submodule(libs/FreeRTOS): add RTOS kernel @v10.4.6
-</code></pre>
-</li>
-<li>
-<p>更新子模块</p>
-<pre><code>submodule(libs/STM32_HAL): update bugfix version @v1.8.6
-
-submodule(libs/FreeRTOS): update to latest commit @8e2dc4f
-</code></pre>
-</li>
-<li>
-<p>删除子模块</p>
-<pre><code>submodule(libs/Deprecated): remove unused driver submodule
-</code></pre>
-</li>
-</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../electronic-docs/mcu-wch/ch584-pins-note.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
 
+                            <a rel="next prefetch" href="../../mcu/code-specification/keil-project-virtual-folder.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -543,7 +261,13 @@ submodule(libs/FreeRTOS): update to latest commit @8e2dc4f
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../electronic-docs/mcu-wch/ch584-pins-note.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
 
+                    <a rel="next prefetch" href="../../mcu/code-specification/keil-project-virtual-folder.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>
@@ -561,21 +285,16 @@ submodule(libs/FreeRTOS): update to latest commit @8e2dc4f
         </script>
 
 
-        <script src="elasticlunr-ef4e11c1.min.js"></script>
-        <script src="mark-09e88c2c.min.js"></script>
-        <script src="searcher-c2a407aa.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-c2a407aa.js"></script>
 
-        <script src="clipboard-1626706a.min.js"></script>
-        <script src="highlight-abc7f01d.js"></script>
-        <script src="book-a0b12cfe.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
 
-        <script>
-        window.addEventListener('load', function() {
-            window.setTimeout(window.print, 100);
-        });
-        </script>
 
 
     </div>
