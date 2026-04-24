@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-27ebf0ef.js";
+            window.path_to_searchindex_js = "searchindex-12d07906.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-72a23cfd.js"></script>
+        <script src="toc-d09269e3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -551,6 +551,132 @@ submodule(libs/FreeRTOS): update to latest commit @8e2dc4f
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="arm-mcu-sdk-仓库规范"><a class="header" href="#arm-mcu-sdk-仓库规范">ARM MCU SDK 仓库规范</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="调试器-wch-link"><a class="header" href="#调试器-wch-link">调试器 WCH-Link</a></h1>
+<h2 id="官方资料"><a class="header" href="#官方资料">官方资料</a></h2>
+<blockquote>
+<p>用户手册：<a href="https://www.wch.cn/downloads/WCH-LinkUserManual_PDF.html">WCH-LinkUserManual.PDF - 南京沁恒微电子股份有限公司</a></p>
+<p>上一个资料中打包了用户手册，避免有新的版本，最好都下载看一下</p>
+</blockquote>
+<blockquote>
+<p>原理图: <a href="https://www.wch.cn/downloads/WCH-LinkSCH_PDF.html">WCH-LinkSCH.PDF - 南京沁恒微电子股份有限公司</a></p>
+</blockquote>
+<blockquote>
+<p>调试器固件: <a href="https://www.wch.cn/downloads/WCH-LinkUtility_ZIP.html">WCH-LinkUtility.ZIP - 南京沁恒微电子股份有限公司</a></p>
+<p>WCH-Link 的固件和用户手册被打包在此资料中</p>
+</blockquote>
+<blockquote>
+<p>固件更新工具: <a href="https://www.wch.cn/downloads/WCHISPTool_Setup_exe.html">WCHISPTool_Setup.exe - 南京沁恒微电子股份有限公司</a></p>
+<p>注意: 下载的安装程序名为 WCHISPTool_Setup，安装后软件名为 WCHISPStudio</p>
+</blockquote>
+<h2 id="wch-link-系列"><a class="header" href="#wch-link-系列">WCH-Link 系列</a></h2>
+<h3 id="link-功能和性能对比表"><a class="header" href="#link-功能和性能对比表">Link 功能和性能对比表</a></h3>
+<p>（摘自《WCH-Link 使用说明 V2.7》）</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th style="text-align: center">功能项</th><th style="text-align: center">WCH-Link-R1-1v1</th><th style="text-align: center">WCH-LinkE-R0-1v3</th><th style="text-align: center">WCH-DAPLink-R0-2v0</th><th style="text-align: center">WCH-LinkW-R0-1v1</th></tr>
+</thead>
+<tbody>
+<tr><td style="text-align: center">使用的芯片</td><td style="text-align: center">CH549G</td><td style="text-align: center">CH32V305F</td><td style="text-align: center">CH32V203G8R</td><td style="text-align: center">CH32V208G</td></tr>
+<tr><td style="text-align: center">RISC-V 模式</td><td style="text-align: center">✔</td><td style="text-align: center">✔</td><td style="text-align: center"></td><td style="text-align: center">✔</td></tr>
+<tr><td style="text-align: center">ARM-SWD 模式-HID 设备</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">ARM-SWD 模式-WINUSB 设备</td><td style="text-align: center">✔</td><td style="text-align: center">✔</td><td style="text-align: center">✔</td><td style="text-align: center">✔</td></tr>
+<tr><td style="text-align: center">ARM-JTAG 模式-HID 设备</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">ARM-JTAG 模式-WINUSB 设备</td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center">✔</td><td style="text-align: center">✔</td></tr>
+<tr><td style="text-align: center">ModeS 键切换模式</td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center">✔</td><td style="text-align: center">✔</td></tr>
+<tr><td style="text-align: center">两线方式离线升级固件</td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">串口离线升级固件</td><td style="text-align: center">✔</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">USB 离线升级固件</td><td style="text-align: center">✔</td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center">✔</td></tr>
+<tr><td style="text-align: center">3.3V/5V 电源输出可控</td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center">✔</td><td style="text-align: center">✔</td></tr>
+<tr><td style="text-align: center">高速 USB2.0 转 JTAG 接口</td><td style="text-align: center"></td><td style="text-align: center">✔</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">无线模式</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✔</td></tr>
+<tr><td style="text-align: center">下载工具</td><td style="text-align: center">MounRiver Studio,<br /><br />WCH-LinkUtility,<br /><br />Keil uVision5</td><td style="text-align: center">MounRiver Studio,<br /><br />WCH-LinkUtility,<br /><br />Keil uVision5</td><td style="text-align: center">WCH-LinkUtility,<br /><br />Keil uVision5</td><td style="text-align: center">MounRiver Studio,<br /><br />WCH-LinkUtility,<br /><br />Keil uVision5</td></tr>
+<tr><td style="text-align: center">Keil 支持版本</td><td style="text-align: center">Keil V5.25 及以上</td><td style="text-align: center">Keil V5.25 及以上</td><td style="text-align: center">所有版本 Keil 都支持</td><td style="text-align: center">Keil V5.25 及以上</td></tr>
+</tbody>
+</table>
+</div>
+<br>
+<h3 id="wch-link-串口支持波特率"><a class="header" href="#wch-link-串口支持波特率">WCH-Link 串口支持波特率</a></h3>
+<p>（摘自《WCH-Link 使用说明 V2.7》）</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th></th><th></th><th></th><th></th></tr>
+</thead>
+<tbody>
+<tr><td>1200</td><td>2400</td><td>4800</td><td>9600</td><td>14400</td></tr>
+<tr><td>19200</td><td>38400</td><td>57600</td><td>115200</td><td>230400</td></tr>
+</tbody>
+</table>
+</div>
+<br>
+<h3 id="wch-linke--daplink--linkw-串口支持波特率"><a class="header" href="#wch-linke--daplink--linkw-串口支持波特率">WCH-LinkE / DAPLink / LinkW 串口支持波特率</a></h3>
+<p>（摘自《WCH-Link 使用说明 V2.7》）</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th></th><th></th><th></th><th></th></tr>
+</thead>
+<tbody>
+<tr><td>1200</td><td>2400</td><td>4800</td><td>9600</td><td>14400</td></tr>
+<tr><td>19200</td><td>38400</td><td>57600</td><td>115200</td><td>230400</td></tr>
+<tr><td>460800</td><td>921600</td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="wch-link-r1-1v1"><a class="header" href="#wch-link-r1-1v1">WCH-Link-R1-1v1</a></h2>
+<h3 id="官方出品"><a class="header" href="#官方出品">官方出品</a></h3>
+<p>待收录</p>
+<h3 id="第三方复刻-yd-link-d"><a class="header" href="#第三方复刻-yd-link-d">第三方复刻 YD-Link-D</a></h3>
+<p><img src="mcu/hardware/pics/pic-01.webp" alt="pic-01"></p>
+<h4 id="固件更新"><a class="header" href="#固件更新">固件更新</a></h4>
+<ol>
+<li>
+<p><strong>获取固件</strong></p>
+<ol>
+<li>
+<p>下载 <a href="#官方资料">官方资料</a> 中的 “调试器固件 WCH-LinkUtility.ZIP”，解压；</p>
+</li>
+<li>
+<p>如果想让调试器连接 ARM 单片机（烧录成 CMSIS-DAP），使用目录 <code>Firmware_Link</code> 中的 <code>WCH-Link_APP_IAP_ARM.bin</code> ;</p>
+<p>如果想让调试器连接沁恒的 RSIC-V 单片机，使用目录 <code>Firmware_Link</code> 中的 <code>WCH-Link_APP_IAP_RV.bin</code></p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>安装烧录工具</strong></p>
+<ol>
+<li>下载 <a href="#官方资料">官方资料</a> 中的 “固件更新工具 WCHISPTool_Setup”，安装后得到软件 WCHISPStudio</li>
+</ol>
+</li>
+<li>
+<p><strong>调试进入固件烧录状态</strong></p>
+<ol>
+<li>调试器不上电，按住调试器上的 ISP 按钮（其实就是BOOT），再使用 USB 线把调试器接入电脑</li>
+</ol>
+</li>
+<li>
+<p><strong>烧录工具配置</strong></p>
+<ol>
+<li>打开 WCHISPStudio</li>
+<li>“芯片” 选择 CH54x</li>
+<li>“芯片信号” 选择 CH549</li>
+<li>“下载接口” 选择 USB</li>
+<li>“设备列表” 搜索，找到刚刚接入的调试器</li>
+<li>“下载文件 - 目标程序文件1” 定位到步骤 “1.获取固件” 中的固件文件</li>
+<li>“下载配置” 选中清空 CodeFlash</li>
+</ol>
+</li>
+<li>
+<p><strong>烧录</strong></p>
+<ol>
+<li>点击下载，等待烧录完成</li>
+<li>拔插 USB 重新接入电脑，查看设备管理器是否识别成功</li>
+<li>如果烧录 ARM 模式，则调试器上的 A/R 指示灯会点亮</li>
+</ol>
+</li>
+</ol>
 
                     </main>
 
