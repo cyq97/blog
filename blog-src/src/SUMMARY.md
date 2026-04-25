@@ -8,14 +8,13 @@
 
 
 
+- [Git]()
+  - [Git 提交出错了? 后悔了?](./git/git-commit-regret.md)
+
+
+
 - [linux](./linux/list.md)
   - [安装 ssh](./linux/ssh-install.md)
-
-
-
-- [电子器件文档笔记]()
-  - [MCU - WCH]()
-    - [CH584 引脚笔记](./electronic-docs/mcu-wch/ch584-pins-note.md)
 
 
 
@@ -29,6 +28,12 @@
     - [调试器 WCH-Link](./mcu/hardware/debug-probe-wch-link.md)
 
 
+
+
+
+- [电子器件文档笔记]()
+  - [MCU - WCH]()
+    - [CH584 引脚笔记](./electronic-docs/mcu-wch/ch584-pins-note.md)
 
 
 
