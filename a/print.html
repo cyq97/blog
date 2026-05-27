@@ -16,8 +16,8 @@
         <link rel="icon" href="favicon-de23e50b.svg">
         <link rel="shortcut icon" href="favicon-8114d1fc.png">
         <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-2459343d.css">
-        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/general-0392ca55.css">
+        <link rel="stylesheet" href="css/chrome-fc474251.css">
         <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-2c3539b4.js";
+            window.path_to_searchindex_js = "searchindex-bc47262a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-b4a6723f.js"></script>
+        <script src="toc-b5fb16a3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -927,6 +927,132 @@ git branch -a
 </tbody>
 </table>
 </div>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="threadx-内核移植-at32f403a-keil5-ac5"><a class="header" href="#threadx-内核移植-at32f403a-keil5-ac5">Threadx 内核移植 AT32F403A Keil5-AC5</a></h1>
+<h2 id="最简移植"><a class="header" href="#最简移植">最简移植</a></h2>
+<ol>
+<li>
+<p>Threadx 内核源码目录: <code>threadx仓库/common</code></p>
+<ul>
+<li>将此目录下 <code>src</code> 目录中的源文件<strong>全部</strong>添加到工程中</li>
+<li>将此目录下 <code>inc</code> 目录的添加到工程的头文件搜索路径中</li>
+</ul>
+</li>
+<li>
+<p>Threadx Port 目录: <code>threadx仓库/ports/cortex_m4/keil</code></p>
+<ul>
+<li>将此目录下 <code>src</code> 目录中的源文件<strong>全部</strong>添加到工程中，包括</li>
+<li>将此目录下 <code>inc</code> 目录的添加到工程的头文件搜索路径中</li>
+</ul>
+</li>
+<li>
+<p>手动创建一个 <code>tx_initialize_low_level.c</code> 文件添加到工程中，文件内容如下</p>
+<pre><code class="language-C">
+#define REG_SCB_SHP(n)              (*(volatile unsigned char*)(0xE000ED18UL + (n)))
+
+#define REG_SYSTICK_CTRL            (*(volatile unsigned int*)(0xE000E010UL))
+#define REG_SYSTICK_LOAD            (*(volatile unsigned int*)(0xE000E014UL))
+#define REG_SYSTICK_VAL             (*(volatile unsigned int*)(0xE000E018UL))
+#define BIT_SYSTICK_CTRL_ENABLE     ((unsigned int)(1 &lt;&lt; 0))
+#define BIT_SYSTICK_CTRL_TICKINT    ((unsigned int)(1 &lt;&lt; 1))
+#define BIT_SYSTICK_CTRL_CLKSRC     ((unsigned int)(1 &lt;&lt; 2))
+
+
+extern unsigned int system_core_clock;
+extern void _tx_timer_interrupt(void);
+
+
+void _tx_initialize_low_level(void)
+{
+  // 关闭中断
+  {
+    //__disable_irq();
+    __asm__ volatile ("CPSID i");
+  }
+
+  // 设置系统异常的优先级
+  {
+    REG_SCB_SHP( 0) =    0; // MemManage_Handler
+    REG_SCB_SHP( 1) =    0; // BusFault_Handler
+    REG_SCB_SHP( 2) =    0; // UsageFault_Handler
+    REG_SCB_SHP( 3) =    0; // ----
+    REG_SCB_SHP( 4) =    0; // ----
+    REG_SCB_SHP( 5) =    0; // ----
+    REG_SCB_SHP( 6) =    0; // ----
+    REG_SCB_SHP( 7) = 0xFF; // SVC_Handler
+    REG_SCB_SHP( 8) =    0; // DebugMon_Handler
+    REG_SCB_SHP( 9) =    0; // ----
+    REG_SCB_SHP(10) = 0xFF; // PendSV_Handler
+    REG_SCB_SHP(11) = 0x40; // SysTick_Handler
+  }
+  
+  // 配置DWT
+  {
+    // TO DO
+  }
+
+  // 配置Systick
+  {
+    // 停止Systick
+    // 关闭Systick中断
+    REG_SYSTICK_CTRL &amp;= ~(BIT_SYSTICK_CTRL_ENABLE | BIT_SYSTICK_CTRL_TICKINT);
+    
+    // 设置Systick时钟为内核时钟
+    REG_SYSTICK_CTRL |=  (BIT_SYSTICK_CTRL_CLKSRC);
+  
+    // 清除Systick计数器
+    REG_SYSTICK_VAL   =  (0x00000000UL);
+  
+    // 设置Systick重装载值
+    const unsigned int rtos_freq = 1000;
+    REG_SYSTICK_LOAD  =  (system_core_clock / rtos_freq) - 1;
+    
+    // 开启Systick中断
+    // 启动Systick
+    REG_SYSTICK_CTRL |=  (BIT_SYSTICK_CTRL_ENABLE | BIT_SYSTICK_CTRL_TICKINT);
+  }
+}
+
+
+void SysTick_Handler()
+{
+    _tx_timer_interrupt();
+}
+
+
+</code></pre>
+</li>
+</ol>
+<h2 id="小记"><a class="header" href="#小记">小记</a></h2>
+<ol>
+<li>ThreadX 内核只使用了 PendSV 和 Sysctick 这两个内核中断</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="keil-使用相关问题处理"><a class="header" href="#keil-使用相关问题处理">Keil 使用相关问题处理</a></h1>
+<h2 id="1-同名源文件导致的烦人的提示"><a class="header" href="#1-同名源文件导致的烦人的提示">1. 同名源文件导致的烦人的提示</a></h2>
+<p><strong>😕 问题描述</strong></p>
+<p>在使用 keil 的时候，有时候会不小心添加了两个相同的 .c 文件，会导致编译出现如下的提示：</p>
+<pre><code>Note: object file renamed from "xxx.o" to "xxx_1.o"
+</code></pre>
+<p>即便删除多余的 .c 文件也不能消除提示。</p>
+<p><strong>😀 处理方法</strong></p>
+<ol>
+<li>
+<p>删除多余的 .c 文件</p>
+</li>
+<li>
+<p>在剩下的有效的 xxx.c 文件（或者文件所在的虚拟文件夹）上点击右键</p>
+<p>选择 <code>Options for File 'xxx.c' …</code></p>
+<p>取消 <code>include in Target Build</code> 处的勾选, 点击 <code>OK</code> 后，重新编译工程</p>
+</li>
+<li>
+<p>点击顶部菜单栏 <code>Project</code> → <code>Clean Targets</code> 清理工程</p>
+</li>
+<li>
+<p>再次打开第 2 步的选项配置</p>
+<p>勾选 <code>include in Target Build</code>，点击 <code>OK</code> 后，重新编译工程</p>
+</li>
+</ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="ch584-引脚笔记"><a class="header" href="#ch584-引脚笔记">CH584 引脚笔记</a></h1>
 <h2 id="电源引脚"><a class="header" href="#电源引脚">电源引脚</a></h2>
@@ -2071,7 +2197,65 @@ git branch -a
 <hr>
 <p><em>End of Extract / 提取结束</em><br><em>For diagrams, timing waveforms, and pad location tables, refer to the original PDF: SH1106_V2.3.pdf</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="oled-ssh1106-笔记"><a class="header" href="#oled-ssh1106-笔记">OLED SSH1106 笔记</a></h1>
+<h1 id="oled-sh1106-笔记"><a class="header" href="#oled-sh1106-笔记">OLED SH1106 笔记</a></h1>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>SH1106的手册中，“A0“是这个屏幕控制器的一个引出焊盘</p>
+<ul>
+<li>在非 I2C 模式下，这个 “A0” 就是用来区分通信的数据是指令还是显存数据的，也就是 D/C 控制。所以，在手册中看到 “A0” 字眼，其实就是指的 D/C 标志。</li>
+<li>在 I2C 模式下，这个 “A0” 就换了一个名字叫 “SA0”，用来作为可配置的 I2C 设备地址。</li>
+</ul>
+</blockquote>
+<h2 id="7-pin-spi-改-4-pin-i2c"><a class="header" href="#7-pin-spi-改-4-pin-i2c">7-PIN-SPI 改 4-PIN-I2C</a></h2>
+<p>购买的 1.3 寸 SSH1106 OLED 屏幕是 7-PIN SPI 接口的</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>GND</th><th>VCC</th><th>CLK</th><th>MOSI</th><th>RST</th><th>DC</th><th>CS</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<p>可以把 7-PIN SPI 接口改成 4-PIN I2C 接口</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>GND</th><th>VCC</th><th>SCL</th><th>SDA</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<p>除了需要更改通信方式配置电阻外，还需要注意：</p>
+<ul>
+<li>
+<p>GND 不变</p>
+</li>
+<li>
+<p>VCC 不变</p>
+</li>
+<li>
+<p>SPI-CLK 信号变为 I2C-SCL 信号</p>
+</li>
+<li>
+<p>SPI-MOSI 信号变为 I2C-SDA 信号</p>
+</li>
+<li>
+<p><strong>RST 上拉到 VCC</strong></p>
+<ul>
+<li>也可以直接接到 VCC，推荐加上拉电阻</li>
+</ul>
+</li>
+<li>
+<p><strong>SPI-DC 转变为 I2C 通信设备地址配置的 SA0</strong></p>
+<blockquote class="blockquote-tag blockquote-tag-important">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
+<p><strong>一定不能悬空</strong>，必须确保设备地址稳定</p>
+</blockquote>
+</li>
+<li>
+<p><strong>SPI-CS 下拉到 GND</strong></p>
+</li>
+</ul>
 <h2 id="i2c-通信"><a class="header" href="#i2c-通信">I2C 通信</a></h2>
 <p><strong>通信速率</strong></p>
 <p>MAX: 400KHz</p>
@@ -2092,6 +2276,108 @@ git branch -a
 </tbody>
 </table>
 </div>
+<h3 id="通信过程"><a class="header" href="#通信过程">通信过程</a></h3>
+<p>主机发出 START</p>
+<p>主机发送从机 SH1106 的地址，0111_10-SA0-R/W</p>
+<p>从机 SH1106 应答</p>
+<p>发送控制字节：Co-DC-ControlByte.</p>
+<ul>
+<li>第7位的 Co=0: 这是最后一个 “控制字节-数据字节对”</li>
+<li>第7位的 Co=1: 后续还有若干 “控制字节-数据字节对”</li>
+<li>Co 就是 Continuation 连续，想要在一个 START-STOP 间传输多个 “控制字节-数据字节对”，就把控制字节的 Co 位置 1</li>
+<li>第6位的 DC=0: 本控制字节后紧跟的数据字节是控制命令的操作内容</li>
+<li>第6位的 DC=1: 本控制字节后紧跟的数据字节是操作显存的</li>
+</ul>
+<p>发送数据字节</p>
+<ul>
+<li>SH1106 有针对内部像素显存的数据指针，当主机发送的是显存数据的时候，这个数据指针会自己移动</li>
+</ul>
+<h3 id="像素布局"><a class="header" href="#像素布局">像素布局</a></h3>
+<p><strong>Segment 和 Common</strong></p>
+<p>在 SH1106 的手册中，有这样的描述：</p>
+<blockquote>
+<p>SH1106 consists of 132 segments, 64 commons that can support a maximum display resolution of 132 X 64. It is designed for Common Cathode type OLED panel.</p>
+<p>SH1106拥有132个段极、64个公共极，最高可支持132×64的显示分辨率，专为共阴极型OLED显示屏设计。</p>
+</blockquote>
+<p>Segment 和 Common 在这个地方被翻译为段极和公共极，这在液晶、断码管、数码管中是很常见的概念。</p>
+<p>因为也指明了这是驱动共阴极OLED面板的，所以，是每 132 个像素点的阴极是连接在一起，接到一个公共极上。</p>
+<p>这里就不多说了，因为我也没有研究太多。提 Segment 和 Common 的关键是后面的像素显示会用到这两个字眼。</p>
+<p>手册中存在各种不同的词：Row、Line、Column、垂直、水平</p>
+<p><strong>Page Address 和 Column Address</strong></p>
+<ul>
+<li>
+<p>页地址和列地址是独立的</p>
+</li>
+<li>
+<p>存在页地址设置指令和列地址设置指令</p>
+</li>
+<li>
+<p>“Page- 页”</p>
+<ul>
+<li>一般的显示面板安装时，尺度大的会被选为水平方向的宽，尺度小的会被选为垂直方向的高。
+<ul>
+<li>SH1106 支持 132 * 64 面板。</li>
+<li>在手册中，132 这个水平尺度就被称为 “Column - 列”，64 这个垂直尺度被称为 “Row - 行” 或者 “Line - 行”</li>
+</ul>
+</li>
+<li>因为是单色屏，一个像素点只需要一个 bit 的数据量就可以表示。所以在垂直方向上，将 8 个像素点的数据打包为 1 个字节</li>
+</ul>
+</li>
+<li>
+<p>“Column - 列” 在此 OLED 控制器中，和 “Segment - 段极” 对应</p>
+<ul>
+<li>
+<p>SH1106 有 132 个 “Column - 列”，列地址范围：0 ~ 131 (0x00 ~ 0x83)</p>
+</li>
+<li>
+<p>前面说过，通信时读写显存数据 (主要是写)，数据指针会自己移动 (自增)。这个数据指针就是 “Column - 列” 指针。</p>
+</li>
+<li>
+<p>列指针的移动只会在当前页内回转，也就是说，当指针指向 0x83 列的时候，自增之后的指针下一次就会指向 0x00 列 (当然，这是在默认的列分布方向的情况)</p>
+</li>
+<li>
+<p>支持 “Column - 列” 反转。</p>
+<ul>
+<li>本来 “Column - 列” 和 “Segment - 段极” 是对应，第 0x00 列对应第 0x00 段。通过列反转指令，可以让第 0x83 列对应第 0x00 段，第 0x00 列对应第 0x83 段。</li>
+<li>列反转相当于镜像显示。</li>
+<li>同理，“Common - 公共极” 也存在反转功能。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Line Address</strong></p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>SH1106 的手册中，在垂直尺度上 “Line” 和 “Row” 混用，“Row” 字眼出现的很少，看到的时候还是有些费解。</p>
+<p>在此器件中，它们是一个概念：行。</p>
+</blockquote>
+<ul>
+<li>
+<p>“Line - 行” 和 “Common - 公共极” 对应</p>
+</li>
+<li>
+<p>SH1106 有 64 个 “Line - 行” ，范围：0 ~ 63 (0x00 ~ 0x3F)</p>
+</li>
+<li>
+<p>支持行反转。</p>
+<p>默认第 0x00 行对应第 0x00 公共极。通过行反转指令，可以让第 0x3F 行对应第 0x00 公共极，第 0x00 行对应第 0x3F  公共极。</p>
+</li>
+<li>
+<p>支持设置首行位置。可以不需要重绘显存实现显示滚动效果。</p>
+</li>
+</ul>
+<p><strong>示意图</strong></p>
+<p><img src="electronic-docs/display/pics/pic-01.webp" alt="pic-01"></p>
+<p>说明：</p>
+<ul>
+<li>固定的内容
+<ul>
+<li>SEG 的编号排列顺序</li>
+<li>COM 的编号排列顺序</li>
+</ul>
+</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="at24c256c-datasheet-extract"><a class="header" href="#at24c256c-datasheet-extract">AT24C256C Datasheet Extract</a></h1>
 <h1 id="at24c256c-数据手册提取"><a class="header" href="#at24c256c-数据手册提取">AT24C256C 数据手册提取</a></h1>
@@ -2460,11 +2746,11 @@ git branch -a
 
         <script src="elasticlunr-ef4e11c1.min.js"></script>
         <script src="mark-09e88c2c.min.js"></script>
-        <script src="searcher-c2a407aa.js"></script>
+        <script src="searcher-09f2665d.js"></script>
 
         <script src="clipboard-1626706a.min.js"></script>
         <script src="highlight-abc7f01d.js"></script>
-        <script src="book-a0b12cfe.js"></script>
+        <script src="book-c22b7243.js"></script>
 
         <!-- Custom JS scripts -->
 
