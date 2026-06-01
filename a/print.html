@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-bc47262a.js";
+            window.path_to_searchindex_js = "searchindex-8b60a83f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-b5fb16a3.js"></script>
+        <script src="toc-f5cf8431.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -366,6 +366,7 @@ git reset --mixed HEAD~5
 <h2 id="环境安装"><a class="header" href="#环境安装">环境安装</a></h2>
 <ul>
 <li><a href="#安装-ssh-服务">安装 ssh</a></li>
+<li><a href="#使用主机名进行-ssh-连接">使用主机名进行 ssh 连接</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="安装-ssh-服务"><a class="header" href="#安装-ssh-服务">安装 SSH 服务</a></h1>
@@ -417,6 +418,38 @@ sudo apt upgrade -y
 </code></pre>
 </li>
 </ol>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="使用主机名进行-ssh-连接"><a class="header" href="#使用主机名进行-ssh-连接">使用主机名进行 ssh 连接</a></h1>
+<p>虚拟机一般没有配置静态 IP，使用同样的 IP 访问可能哪天就失效了，而使用主机名就不用担心这个事情了。</p>
+<h2 id="环境"><a class="header" href="#环境">环境</a></h2>
+<p>宿主机：win10</p>
+<p>虚拟机软件：VMware</p>
+<p>虚拟机：ubuntu, <strong>网络 - 桥接模式</strong></p>
+<h2 id="配置"><a class="header" href="#配置">配置</a></h2>
+<p>ubuntu 端设置</p>
+<ol>
+<li>
+<p>老习惯，更新</p>
+<p><code>sudo apt-get update</code></p>
+<p><code>sudo apt-get upgrade -y</code></p>
+</li>
+<li>
+<p>使用 <code>hostname</code> 查看主机名</p>
+</li>
+<li>
+<p>安装 Samba</p>
+<p><code>sudo apt install samba -y</code></p>
+</li>
+<li>
+<p>启动并启用 NetBIOS 名称服务 (nmbd) 和 SMB 服务 (smbd)</p>
+<p><code>sudo systemctl enable --now smbd nmbd</code></p>
+</li>
+<li>
+<p>验证. 在 win 主机上 ping 主机名</p>
+</li>
+</ol>
+<h2 id="ssh-连接"><a class="header" href="#ssh-连接">ssh 连接</a></h2>
+<p>在 windows cmd 中输入 <code>ssh 用户名@主机名</code> 连接</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="mdk5-keil代码工程的目录规范"><a class="header" href="#mdk5-keil代码工程的目录规范">MDK5-KEIL代码工程的目录规范</a></h1>
 <pre><code class="language-shell">code-Repository
