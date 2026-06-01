@@ -15,6 +15,7 @@
 
 - [linux](./linux/list.md)
   - [安装 ssh](./linux/ssh-install.md)
+  - [使用主机名进行 ssh 连接](./linux/ssh-use-hostname.md)
 
 
 
