@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>KEIL 工程Git提交规范 - blog</title>
+        <title>TMOS 调度系统使用指南 - blog</title>
 
 
         <!-- Custom HTML head -->
@@ -174,277 +174,271 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="mdk5-keil工程-git-分支管理规范"><a class="header" href="#mdk5-keil工程-git-分支管理规范">MDK5-KEIL工程 Git 分支管理规范</a></h1>
-<h2 id="一常驻长期分支固定不变"><a class="header" href="#一常驻长期分支固定不变">一、常驻长期分支（固定不变）</a></h2>
-<p>仅两条，永久保留，<strong>禁止直接在这两个分支手写提交</strong>，<strong>只允许合并</strong>：</p>
-<ul>
-<li><code>main</code>：正式稳定发布分支，随时可编译、可烧录、可发版</li>
-<li><code>develop</code>：开发集成分支，所有功能 / 修复 / 子模块变更先合到这里</li>
-</ul>
-<p>所有临时开发分支，<strong>必须从 develop 迁出</strong>，<strong>合并完成后立即删除</strong></p>
-<h2 id="二临时开发分支命名规范"><a class="header" href="#二临时开发分支命名规范">二、临时开发分支命名规范</a></h2>
-<blockquote class="blockquote-tag blockquote-tag-warning">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p>
-<p>❌ <strong>千万不要重复使用已经删掉的同名分支</strong></p>
-</blockquote>
-<h3 id="标准命名格式"><a class="header" href="#标准命名格式">标准命名格式</a></h3>
-<pre><code>类型/工程/模块
+                        <h1 id="tmos-调度系统使用指南"><a class="header" href="#tmos-调度系统使用指南">TMOS 调度系统使用指南</a></h1>
+<h2 id="概述"><a class="header" href="#概述">概述</a></h2>
+<p>TMOS (Task Management Operating System) 是沁恒 BLE 协议栈内置的一个<strong>轻量级协作式任务调度器</strong>。它不是抢占式 RTOS，不涉及线程、栈切换等复杂概念。核心思想很简单：<strong>每个任务注册一个事件处理函数，系统在 <code>TMOS_SystemProcess()</code> 中轮询调度</strong>。</p>
+<pre><code>main() {
+    TMOS_TimerInit(...);          // 1. 初始化定时器
+    ...
+    TMOS_ProcessEventRegister(handler1);  // 2. 注册任务
+    TMOS_ProcessEventRegister(handler2);
+    ...
+    while(1) {
+        TMOS_SystemProcess();     // 3. 主循环：处理定时器 + 派发事件
+    }
+}
 </code></pre>
-<p>一个分支只做一件事，通过命名就能了解工作内容。</p>
-<ul>
-<li>
-<p>类型：使用下面列出的类型词根</p>
-</li>
-<li>
-<p>工程：仓库支持多 KEIL5 单片机工程管理，填入工程名标识在操作哪个工程</p>
-</li>
-<li>
-<p>模块：简单表明这个分支是关于哪个功能的</p>
-</li>
-</ul>
-<h3 id="统一类型词根"><a class="header" href="#统一类型词根">统一类型词根</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th style="text-align: center">类型</th><th style="text-align: center">场景</th></tr>
-</thead>
-<tbody>
-<tr><td style="text-align: center">feat</td><td style="text-align: center">新增功能/驱动/业务逻辑</td></tr>
-<tr><td style="text-align: center">fix</td><td style="text-align: center">修复Bug、硬件适配、逻辑异常</td></tr>
-<tr><td style="text-align: center">docs</td><td style="text-align: center">文档、注释、README、说明文案调整</td></tr>
-<tr><td style="text-align: center">style</td><td style="text-align: center">代码格式缩进、空格规整，不改变业务逻辑</td></tr>
-<tr><td style="text-align: center">refactor</td><td style="text-align: center">代码重构、结构梳理、函数拆分，无功能增减</td></tr>
-<tr><td style="text-align: center">perf</td><td style="text-align: center">运行性能、功耗、采样速率、时序优化</td></tr>
-<tr><td style="text-align: center">test</td><td style="text-align: center">新增/修改测试代码、仿真例程</td></tr>
-<tr><td style="text-align: center">build</td><td style="text-align: center">工程配置、编译脚本、链接脚本、编译选项</td></tr>
-<tr><td style="text-align: center">ci</td><td style="text-align: center">自动化编译、烧录、部署流水线脚本</td></tr>
-<tr><td style="text-align: center">chore</td><td style="text-align: center">冗余文件清理、目录整理、无关业务杂项</td></tr>
-<tr><td style="text-align: center">submodule</td><td style="text-align: center">子模块新增/更新/删除/仓库地址变更</td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="绝不能有同名分支"><a class="header" href="#绝不能有同名分支">绝不能有同名分支</a></h3>
-<blockquote>
-<p>背景说明：</p>
-<p>比如开发某个功能创建了一个临时开发分支，开发完成后合并到 develop 分支顺便删除了这个临时开发分支。后续又想继续开发这个功能时，<strong>不能再创建同名的临时开发分支了</strong>。</p>
-</blockquote>
-<h4 id="原因说明"><a class="header" href="#原因说明">原因说明</a></h4>
-<ul>
-<li>
-<p><strong>Git 会混乱</strong></p>
-<ul>
-<li>
-<p>删掉的旧分支 = 历史版本</p>
-</li>
-<li>
-<p>新建的同名分支 = 新版本</p>
-</li>
-<li>
-<p>但 Git 会<strong>残留历史记录</strong>，容易合并出错、冲突乱飞。</p>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>版本追踪会乱</strong></p>
-<ul>
-<li>别人看日志：<code>feat/noboot-app/Main</code> 这个分支<strong>被删了又建、建了又删</strong>，完全不知道哪个是最新、哪个是历史。</li>
-</ul>
-</li>
-<li>
-<p><strong>功能已经合并到 develop，它就 “结束了”</strong></p>
-<ul>
-<li>这个分支的使命已经完成，<strong>不应该复活</strong>。</li>
-</ul>
-</li>
-</ul>
-<h4 id="标准规范"><a class="header" href="#标准规范">标准规范</a></h4>
-<p><strong>基础名只用一次，后续迭代加固定后缀，永不复用同名空分支</strong></p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>场景</th><th>后缀</th></tr>
-</thead>
-<tbody>
-<tr><td>功能新增 / 扩展<br />（在原有基础上加新功能）</td><td><code>-extend</code> / <code>-addon</code></td></tr>
-<tr><td>功能优化 / 重构<br />（不改逻辑，梳理代码、结构、可读性）</td><td><code>-refactor</code> / <code>-optimize</code></td></tr>
-<tr><td>版本迭代大更新<br />（改动比较大，相当于第二版）</td><td><code>-v2</code>、<code>-v3</code> 依次累加</td></tr>
-<tr><td>修复该功能遗留 Bug</td><td>直接换类型为 <code>fix</code>，复用模块名即可，不用加多余后缀</td></tr>
-<tr><td>适配移植 / 适配新芯片</td><td><code>-adapt</code></td></tr>
-<tr><td>精简裁剪 / 去掉冗余代码</td><td><code>-trim</code></td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="三提交信息规范"><a class="header" href="#三提交信息规范">三、提交信息规范</a></h2>
-<h3 id="标准通用格式"><a class="header" href="#标准通用格式"><strong>标准通用格式</strong></a></h3>
-<pre><code>临时开发分支名: &lt;简短描述&gt;
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<h3 id="时间基准"><a class="header" href="#时间基准">时间基准</a></h3>
+<p>TMOS 的时间单位是 <strong>625μs</strong>（1 个 system tick）。所有定时参数都以 ticks 为单位。</p>
+<pre><code class="language-c">#define SYSTEM_TIME_MICROSEN  625
+#define MS1_TO_SYSTEM_TIME(x)  ((x) * 1000 / SYSTEM_TIME_MICROSEN)  // 毫秒 → ticks
 </code></pre>
-<p>提交信息的开头使用临时开发分支名，这样开发完合并之后的时候，从 develop 的日志中可以清楚的梳理开发历史。</p>
-<p><strong>示例：</strong></p>
-<p>新建了一个统一入口头文件，用来统一管理、调用底层 MCU SDK，做工程标准化收口。</p>
-<pre><code>feat/noboot-app/Main: Create mcu-device.h as a common standard entry for accessing the MCU SDK
-</code></pre>
+<p>换算关系：</p>
 <ul>
-<li>临时开发分支名 - feat/noboot-app//Main</li>
-<li>描述 - Create mcu-device.h as a common standard entry for accessing the MCU SDK</li>
+<li><code>1 ms</code> ≈ 1.6 ticks</li>
+<li><code>1600</code> ticks = 1 秒</li>
+<li><code>3200</code> ticks = 2 秒</li>
 </ul>
-<h3 id="子模块专属强制格式"><a class="header" href="#子模块专属强制格式">子模块专属强制格式</a></h3>
-<pre><code>submodule/&lt;子模块路径&gt;: &lt;操作&gt; &lt;描述&gt; @&lt;版本信息&gt;
+<h3 id="任务-id-tmostaskid"><a class="header" href="#任务-id-tmostaskid">任务 ID (<code>tmosTaskID</code>)</a></h3>
+<p><code>uint8_t</code> 类型，范围 0~255。通过 <code>TMOS_ProcessEventRegister()</code> 获取。</p>
+<h3 id="事件-tmosevents"><a class="header" href="#事件-tmosevents">事件 (<code>tmosEvents</code>)</a></h3>
+<p><code>uint16_t</code> 位掩码，每个 bit 代表一个事件。<strong>低 15 位（bit0~14）由用户自定义</strong>，最高位 <code>SYS_EVENT_MSG</code> (0x8000) 由系统保留，用于消息传递。</p>
+<pre><code class="language-c">#define SYS_EVENT_MSG  0x8000   // 有消息待处理
+#define INVALID_TASK_ID 0xFF    // 非法任务ID
 </code></pre>
-<p><strong>严格规则</strong></p>
+<p>一个任务可以同时被多个事件触发：</p>
+<pre><code class="language-c">uint16 events = SBP_START_DEVICE_EVT | SBP_PARAM_UPDATE_EVT;
+</code></pre>
+<h3 id="任务处理函数"><a class="header" href="#任务处理函数">任务处理函数</a></h3>
+<pre><code class="language-c">typedef tmosEvents (*pTaskEventHandlerFn)(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>返回值是<strong>未处理的事件</strong>。返回 0 表示所有事件都已处理完毕。</p>
+<pre><code class="language-c">uint16 MyTask_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; MY_EVENT_A)     // 检查事件A
+    {
+        // 处理...
+        return (events ^ MY_EVENT_A);  // 清除已处理的事件
+    }
+
+    if (events &amp; SYS_EVENT_MSG)  // 检查消息
+    {
+        uint8 *msg = tmos_msg_receive(task_id);
+        if (msg) {
+            // 处理消息...
+            tmos_msg_deallocate(msg);  // 释放消息
+        }
+        return (events ^ SYS_EVENT_MSG);
+    }
+    return 0;  // 未知事件，全部丢弃
+}
+</code></pre>
+<hr>
+<h2 id="api-参考"><a class="header" href="#api-参考">API 参考</a></h2>
+<h3 id="注册任务"><a class="header" href="#注册任务">注册任务</a></h3>
+<pre><code class="language-c">tmosTaskID TMOS_ProcessEventRegister(pTaskEventHandlerFn eventCb);
+</code></pre>
+<p>返回任务 ID，失败返回 <code>INVALID_TASK_ID</code> (0xFF)。</p>
+<p>示例：</p>
+<pre><code class="language-c">uint8_t MyTaskID;
+MyTaskID = TMOS_ProcessEventRegister(MyTask_ProcessEvent);
+if (MyTaskID == INVALID_TASK_ID) { /* 错误处理 */ }
+</code></pre>
+<h3 id="立即触发事件"><a class="header" href="#立即触发事件">立即触发事件</a></h3>
+<pre><code class="language-c">bStatus_t tmos_set_event(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>将事件立即置位，下次 <code>TMOS_SystemProcess()</code> 时触发。</p>
+<p><strong>注意</strong>：不能在任务自己的事件处理函数内调用 <code>tmos_set_event</code> 给自己设置同一个事件（会导致死循环）。如需重入，用 <code>tmos_start_task</code>。</p>
+<h3 id="延迟触发事件单次"><a class="header" href="#延迟触发事件单次">延迟触发事件（单次）</a></h3>
+<pre><code class="language-c">BOOL tmos_start_task(tmosTaskID taskID, tmosEvents event, tmosTimer time);
+</code></pre>
+<p>在 <code>time</code> 个 ticks 后触发指定事件一次。</p>
+<pre><code class="language-c">// 1 秒后触发 MY_EVENT
+tmos_start_task(MyTaskID, MY_EVENT, 1600);
+// 10ms 后触发
+tmos_start_task(MyTaskID, MY_EVENT, MS1_TO_SYSTEM_TIME(10));
+</code></pre>
+<h3 id="周期触发事件自动重载"><a class="header" href="#周期触发事件自动重载">周期触发事件（自动重载）</a></h3>
+<pre><code class="language-c">bStatus_t tmos_start_reload_task(tmosTaskID taskID, tmosEvents event, tmosTimer time);
+</code></pre>
+<p>与 <code>tmos_start_task</code> 类似，但触发后<strong>自动重新装载</strong>，实现周期性定时。</p>
+<pre><code class="language-c">// 每 500ms 触发一次
+tmos_start_reload_task(MyTaskID, MY_PERIODIC_EVT, MS1_TO_SYSTEM_TIME(500));
+</code></pre>
+<h3 id="停止定时器"><a class="header" href="#停止定时器">停止定时器</a></h3>
+<pre><code class="language-c">bStatus_t tmos_stop_task(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>取消尚未触发的定时事件。</p>
+<h3 id="清除事件"><a class="header" href="#清除事件">清除事件</a></h3>
+<pre><code class="language-c">bStatus_t tmos_clear_event(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>将已触发但尚未处理的事件清除。<strong>不能在自己的事件处理函数内使用。</strong></p>
+<h3 id="查询剩余时间"><a class="header" href="#查询剩余时间">查询剩余时间</a></h3>
+<pre><code class="language-c">tmosTimer tmos_get_task_timer(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>返回该事件距离到期的剩余 ticks 数。</p>
+<hr>
+<h2 id="消息传递"><a class="header" href="#消息传递">消息传递</a></h2>
+<p>TMOS 支持任务间发送消息。消息以 <code>SYS_EVENT_MSG</code> 方式通知接收任务。</p>
+<h3 id="发送消息"><a class="header" href="#发送消息">发送消息</a></h3>
+<pre><code class="language-c">bStatus_t tmos_msg_send(tmosTaskID taskID, uint8_t *msg_ptr);
+</code></pre>
+<p>发送消息后，接收任务的 <code>SYS_EVENT_MSG</code> 事件会被置位。</p>
+<h3 id="分配释放消息"><a class="header" href="#分配释放消息">分配/释放消息</a></h3>
+<pre><code class="language-c">uint8_t *tmos_msg_allocate(uint16_t len);         // 分配消息缓冲区
+bStatus_t tmos_msg_deallocate(uint8_t *msg_ptr);  // 释放消息
+</code></pre>
+<p>发送消息前，必须先用 <code>tmos_msg_allocate</code> 分配内存。接收方处理完后调用 <code>tmos_msg_deallocate</code> 释放。</p>
+<h3 id="接收消息"><a class="header" href="#接收消息">接收消息</a></h3>
+<pre><code class="language-c">uint8_t *tmos_msg_receive(tmosTaskID taskID);
+</code></pre>
+<p>在任务的事件处理函数中，收到 <code>SYS_EVENT_MSG</code> 时调用。返回消息指针，无消息时返回 <code>NULL</code>。</p>
+<h3 id="完整示例发送带数据的消息"><a class="header" href="#完整示例发送带数据的消息">完整示例：发送带数据的消息</a></h3>
+<pre><code class="language-c">// 发送方
+typedef struct {
+    tmos_event_hdr_t hdr;   // 必须第一个字段: {event, status}
+    uint16_t value;
+} my_msg_t;
+
+void send_msg(uint8_t target_task)
+{
+    my_msg_t *msg = (my_msg_t *)tmos_msg_allocate(sizeof(my_msg_t));
+    if (msg) {
+        msg-&gt;hdr.event = MY_CUSTOM_MSG;  // 自定义消息类型
+        msg-&gt;hdr.status = 0;
+        msg-&gt;value = 42;
+        tmos_msg_send(target_task, (uint8_t *)msg);
+    }
+}
+
+// 接收方
+uint16 MyTask_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; SYS_EVENT_MSG) {
+        uint8_t *p = tmos_msg_receive(task_id);
+        while (p) {
+            my_msg_t *msg = (my_msg_t *)p;
+            if (msg-&gt;hdr.event == MY_CUSTOM_MSG) {
+                // 处理 msg-&gt;value
+            }
+            tmos_msg_deallocate(p);
+            p = tmos_msg_receive(task_id);  // 可能有多个消息排队
+        }
+        return (events ^ SYS_EVENT_MSG);
+    }
+    return 0;
+}
+</code></pre>
+<hr>
+<h2 id="实用工具函数"><a class="header" href="#实用工具函数">实用工具函数</a></h2>
+<pre><code class="language-c">void   tmos_memcpy(void *dst, const void *src, uint32_t len);
+void   tmos_memset(void *dst, uint8_t val, uint32_t len);
+BOOL   tmos_memcmp(const void *s1, const void *s2, uint32_t len);
+BOOL   tmos_isbufset(uint8_t *buf, uint8_t val, uint32_t len);
+uint32_t tmos_strlen(char *str);
+uint32_t tmos_rand(void);
+</code></pre>
+<hr>
+<h2 id="常见用法模式"><a class="header" href="#常见用法模式">常见用法模式</a></h2>
+<h3 id="模式-1单次延迟执行"><a class="header" href="#模式-1单次延迟执行">模式 1：单次延迟执行</a></h3>
+<pre><code class="language-c">#define LED_OFF_EVT  0x0001
+
+uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; LED_OFF_EVT) {
+        LED_Off();
+        return (events ^ LED_OFF_EVT);
+    }
+    return 0;
+}
+
+void app_init(void)
+{
+    AppTaskID = TMOS_ProcessEventRegister(App_ProcessEvent);
+    // 按键按下，3 秒后关灯
+    tmos_start_task(AppTaskID, LED_OFF_EVT, MS1_TO_SYSTEM_TIME(3000));
+}
+</code></pre>
+<h3 id="模式-2周期性轮询"><a class="header" href="#模式-2周期性轮询">模式 2：周期性轮询</a></h3>
+<pre><code class="language-c">#define POLL_EVT  0x0002
+
+uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; POLL_EVT) {
+        read_sensor();
+        // 自动重复，无需手动续约
+        return (events ^ POLL_EVT);
+    }
+    return 0;
+}
+
+void app_init(void)
+{
+    AppTaskID = TMOS_ProcessEventRegister(App_ProcessEvent);
+    tmos_start_reload_task(AppTaskID, POLL_EVT, MS1_TO_SYSTEM_TIME(100));
+}
+</code></pre>
+<h3 id="模式-3手动续约"><a class="header" href="#模式-3手动续约">模式 3：手动续约</a></h3>
+<pre><code class="language-c">uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; SEND_EVT) {
+        if (is_ready()) {
+            send_data();
+            tmos_start_task(task_id, SEND_EVT, SEND_INTERVAL);  // 续约
+        }
+        // 不 ready 时不再续约，链自然中断
+        return (events ^ SEND_EVT);
+    }
+    return 0;
+}
+</code></pre>
+<h3 id="模式-4从-ble-回调延迟发送"><a class="header" href="#模式-4从-ble-回调延迟发送">模式 4：从 BLE 回调延迟发送</a></h3>
+<p>TMOS 任务的事件处理函数在<strong>主循环上下文</strong>中执行，而 BLE 消息回调在协议栈内部上下文中执行。如果在回调里直接调用 BLE 发送 API 可能失败，需要通过 TMOS 延迟到主循环执行：</p>
+<pre><code class="language-c">// BLE 回调中（不能直接发数据）
+void on_ble_rx(uint16 conn, uint8_t *data, uint16_t len)
+{
+    // 把数据缓存起来
+    tmos_memcpy(echo_buf, data, len);
+    echo_len = len;
+    echo_conn = conn;
+    // 延迟到下一个 TMOS tick
+    tmos_start_task(AppTaskID, ECHO_SEND_EVT, 1);
+}
+
+// TMOS 任务处理函数（主循环上下文，可以安全调用 BLE API）
+uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; ECHO_SEND_EVT) {
+        ch_send(echo_conn, echo_buf, echo_len);
+        return (events ^ ECHO_SEND_EVT);
+    }
+    return 0;
+}
+</code></pre>
+<hr>
+<h2 id="关键注意事项"><a class="header" href="#关键注意事项">关键注意事项</a></h2>
 <ol>
-<li><strong>类型固定</strong>：<code>submodule</code></li>
-<li><strong>操作仅限 3 种</strong>：<code>add</code> / <code>update</code> / <code>remove</code></li>
-<li><strong>add 必须带</strong>：初始版本（tag /hash）</li>
-<li><strong>update 必须带</strong>：目标版本（tag /hash）</li>
-<li><strong>版本格式</strong>：<code>@v1.0.0</code> 或 <code>@a1b2c3d</code></li>
+<li><strong>不要在中断里调用 TMOS API</strong>。TMOS 不是线程安全的，所有操作必须在主循环上下文。</li>
+<li><strong>事件位不要冲突</strong>。每个任务的 bit0~14 可以自由定义，但要确保不同事件的掩码不重叠。</li>
+<li><strong><code>tmos_set_event</code> vs <code>tmos_start_task</code></strong>：前者立即触发（当前 tick），后者延迟触发。重入场景用后者。</li>
+<li><strong>消息必须释放</strong>：<code>tmos_msg_receive</code> 之后必须 <code>tmos_msg_deallocate</code>，否则内存泄漏。</li>
+<li><strong><code>TMOS_SystemProcess()</code> 驱动一切</strong>：它处理时钟更新、定时器到期、事件派发。如果长时间不调用，所有定时器都会延迟。</li>
+<li><strong>定时精度有限</strong>：TMOS 的 RTC 时钟精度取决于配置的时钟源（内部 LSI 约 32kHz，外部 LSE 32.768kHz），不适合微秒级精确定时。</li>
 </ol>
-<p><strong>示例</strong></p>
-<ol>
-<li>
-<p>添加子模块</p>
-<pre><code>submodule/libs/STM32_HAL: add official HAL library @v1.8.5
-
-submodule/libs/FreeRTOS/: add RTOS kernel @v10.4.6
-</code></pre>
-</li>
-<li>
-<p>更新子模块</p>
-<pre><code>submodule/libs/STM32_HAL: update bugfix version @v1.8.6
-
-submodule/libs/FreeRTOS: update to latest commit @8e2dc4f
-</code></pre>
-</li>
-<li>
-<p>删除子模块</p>
-<pre><code>submodule/libs/Deprecated: remove unused driver submodule
-</code></pre>
-</li>
-</ol>
-<h2 id="4-pr"><a class="header" href="#4-pr">4. PR</a></h2>
-<p><strong>Pull Request (PR)</strong>:</p>
-<ul>
-<li>PR 是在 GitHub 上的术语，用于请求将一个分支的更改合并到另一个分支（通常是主分支或开发分支）。</li>
-<li>开发者通过 PR 提交代码更改，其他团队成员可以查看、讨论和审查这些更改。</li>
-</ul>
-<h3 id="命令形式仿真-pr-操作"><a class="header" href="#命令形式仿真-pr-操作">命令形式仿真 PR 操作</a></h3>
-<blockquote class="blockquote-tag blockquote-tag-note">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>当使用 Github、Gitee 等平台时，PR 提供代码审查的功能，但当一个人开发并且不使用这些平台时，可以简化为合并即可，以下提供命令形式的仿真 PR 操作。</p>
-<p>当在某个临时开发分支上完成了任务，就可以准备将此分支合并到 develop 分支了。</p>
-<p>使用 Git 管理的核心就是：<strong>一个分支 = 一个独立任务</strong></p>
-</blockquote>
-<ol>
-<li>
-<p>切换到 <strong>接收方</strong> 分支</p>
-<pre><code class="language-shell">git checkout develop
-</code></pre>
-</li>
-<li>
-<p>合并</p>
-<pre><code class="language-shell">git merge feat/noboot-app/Main
-</code></pre>
-</li>
-<li>
-<p>删除临时开发分支</p>
-<pre><code class="language-shell">git branch -d feat/noboot-app/Main
-</code></pre>
-</li>
-</ol>
-<h3 id="gitee-平台上-pr"><a class="header" href="#gitee-平台上-pr">Gitee 平台上 PR</a></h3>
-<ul>
-<li>
-<p>当在某个临时开发分支上完成了任务，可以将此分支推送到远端仓库。</p>
-</li>
-<li>
-<p>之后在 Gitee 的仓库中点击 <code>Pull Requests</code>，点击 <code>新建 Pull Request</code>。选择源分支为此临时开发分支，目标分支为 develop 分支。</p>
-</li>
-<li>
-<p>填写提交信息，创建 Pull Request</p>
-</li>
-<li>
-<p>完成审查、测试。</p>
-</li>
-<li>
-<p>配置合并选项</p>
-<ul>
-<li>
-<p>合并选项：合并后删除提交分支（默认不勾选）</p>
-<p>一般会选择这个选项，因为这个临时分支的使命已经结束了。</p>
-<p>注意，这只是删除了远端仓库中的这个分支，本地的仍需要自己去删除。</p>
-</li>
-<li>
-<p>合并选项：合并后关闭提到的 Issue（默认勾选）</p>
-</li>
-<li>
-<p>合并选项：接受 Pull Request 时使用<strong>扁平化 (Squash) 合并</strong></p>
-<p>临时开发分支肯定会有多条提交记录，使用 Squash 合并时会将这个分支的多个提交压缩成 1 条提交，使得目标分支历史干净。</p>
-<p>不过，因为前面的 <strong>提交信息规范</strong> 中规定了提交信息必须以分支名开头，就是不使用 Squash 合并的方式，也能一眼看出这些提交是来自同一个功能分支的，不会乱。</p>
-</li>
-</ul>
-</li>
-</ul>
-<blockquote class="blockquote-tag blockquote-tag-note">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>注意，远端删除了某个分支，本地仓库可不知道远端分支信息改变了，本地分支和远端分支是独立的。</p>
-<p>可以执行以下操作来同步分支信息</p>
-<pre><code class="language-shell"># 切换到 develop 分支
-git checkout develop
-
-# 同步远端分支，把已经删除的远端分支标记为已删除
-# 清理掉本地记录里那些已经在远端被删除的分支信息
-# 让 git branch -a 看起来更干净，但不会影响本地的实际分支。
-git fetch --prune
-
-# 查看所有分支信息，包括远端的
-git branch -a
-
-# 如果远端删除了临时开发分支，想把本地分支也删除掉
-git branch -d 本地临时开发分支名
-
-# 再次查看所有分支信息，可以看到本地的临时开发分支被删除了
-git branch -a
-</code></pre>
-</blockquote>
-<h3 id="pr-草稿"><a class="header" href="#pr-草稿">PR 草稿</a></h3>
-<p>在创建 Pull Request 的时候，还可以选择创建 PR 草稿。</p>
-<p>PR 草稿就是<strong>未完成、待完善的半成品 PR</strong>，相当于你开了个 “占坑” 的 PR，先让别人看到你在做什么，但还没准备好被合并。</p>
-<p><strong>PR 草稿的特点</strong></p>
-<ul>
-<li>
-<p><strong>不能被合并</strong></p>
-<p>草稿状态的 PR，合并按钮是灰色的，只有你点「标记为可合并」后，才允许别人审核和合并。</p>
-</li>
-<li>
-<p><strong>合开发中、未完成的代码</strong></p>
-<p>比如你正在写一个功能，还没写完，但想：</p>
-<ul>
-<li>
-<p>先提交上去做备份</p>
-</li>
-<li>
-<p>让别人提前看看思路</p>
-</li>
-<li>
-<p>或者自己先记录一下变更，避免忘记</p>
-</li>
-</ul>
-<p>就可以先创建成草稿 PR。</p>
-</li>
-<li>
-<p><strong>可以随时更新、补充</strong></p>
-<p>后续继续往这个分支 push 提交，草稿 PR 会自动更新，写完再改成正式 PR 就行。</p>
-</li>
-</ul>
+<hr>
+<h2 id="与-hal-层的关系"><a class="header" href="#与-hal-层的关系">与 HAL 层的关系</a></h2>
+<p><code>HAL_Init()</code> 内部调用了 <code>TMOS_TimerInit()</code>，并注册了 HAL 任务。用户不需要手动初始化 TMOS 时钟，只需注册自己的任务即可。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../mcu/code-specification/keil-project-virtual-folder.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../electronic-docs/mcu-wch/ch583-sdk-ble-examples.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../mcu/code-specification/arm-mcu-sdk-structure.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../electronic-docs/display/oled-ssh1106-SH1106_Datasheet_Extract.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -454,11 +448,11 @@ git branch -a
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../mcu/code-specification/keil-project-virtual-folder.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../electronic-docs/mcu-wch/ch583-sdk-ble-examples.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../mcu/code-specification/arm-mcu-sdk-structure.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../electronic-docs/display/oled-ssh1106-SH1106_Datasheet_Extract.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

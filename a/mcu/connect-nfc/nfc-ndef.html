@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>KEIL 工程Git提交规范 - blog</title>
+        <title>NDEF (NFC 数据交换格式) - blog</title>
 
 
         <!-- Custom HTML head -->
@@ -174,277 +174,263 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="mdk5-keil工程-git-分支管理规范"><a class="header" href="#mdk5-keil工程-git-分支管理规范">MDK5-KEIL工程 Git 分支管理规范</a></h1>
-<h2 id="一常驻长期分支固定不变"><a class="header" href="#一常驻长期分支固定不变">一、常驻长期分支（固定不变）</a></h2>
-<p>仅两条，永久保留，<strong>禁止直接在这两个分支手写提交</strong>，<strong>只允许合并</strong>：</p>
-<ul>
-<li><code>main</code>：正式稳定发布分支，随时可编译、可烧录、可发版</li>
-<li><code>develop</code>：开发集成分支，所有功能 / 修复 / 子模块变更先合到这里</li>
-</ul>
-<p>所有临时开发分支，<strong>必须从 develop 迁出</strong>，<strong>合并完成后立即删除</strong></p>
-<h2 id="二临时开发分支命名规范"><a class="header" href="#二临时开发分支命名规范">二、临时开发分支命名规范</a></h2>
-<blockquote class="blockquote-tag blockquote-tag-warning">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p>
-<p>❌ <strong>千万不要重复使用已经删掉的同名分支</strong></p>
-</blockquote>
-<h3 id="标准命名格式"><a class="header" href="#标准命名格式">标准命名格式</a></h3>
-<pre><code>类型/工程/模块
-</code></pre>
-<p>一个分支只做一件事，通过命名就能了解工作内容。</p>
-<ul>
-<li>
-<p>类型：使用下面列出的类型词根</p>
-</li>
-<li>
-<p>工程：仓库支持多 KEIL5 单片机工程管理，填入工程名标识在操作哪个工程</p>
-</li>
-<li>
-<p>模块：简单表明这个分支是关于哪个功能的</p>
-</li>
-</ul>
-<h3 id="统一类型词根"><a class="header" href="#统一类型词根">统一类型词根</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th style="text-align: center">类型</th><th style="text-align: center">场景</th></tr>
-</thead>
-<tbody>
-<tr><td style="text-align: center">feat</td><td style="text-align: center">新增功能/驱动/业务逻辑</td></tr>
-<tr><td style="text-align: center">fix</td><td style="text-align: center">修复Bug、硬件适配、逻辑异常</td></tr>
-<tr><td style="text-align: center">docs</td><td style="text-align: center">文档、注释、README、说明文案调整</td></tr>
-<tr><td style="text-align: center">style</td><td style="text-align: center">代码格式缩进、空格规整，不改变业务逻辑</td></tr>
-<tr><td style="text-align: center">refactor</td><td style="text-align: center">代码重构、结构梳理、函数拆分，无功能增减</td></tr>
-<tr><td style="text-align: center">perf</td><td style="text-align: center">运行性能、功耗、采样速率、时序优化</td></tr>
-<tr><td style="text-align: center">test</td><td style="text-align: center">新增/修改测试代码、仿真例程</td></tr>
-<tr><td style="text-align: center">build</td><td style="text-align: center">工程配置、编译脚本、链接脚本、编译选项</td></tr>
-<tr><td style="text-align: center">ci</td><td style="text-align: center">自动化编译、烧录、部署流水线脚本</td></tr>
-<tr><td style="text-align: center">chore</td><td style="text-align: center">冗余文件清理、目录整理、无关业务杂项</td></tr>
-<tr><td style="text-align: center">submodule</td><td style="text-align: center">子模块新增/更新/删除/仓库地址变更</td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="绝不能有同名分支"><a class="header" href="#绝不能有同名分支">绝不能有同名分支</a></h3>
+                        <h1 id="ndef-nfc-数据交换格式"><a class="header" href="#ndef-nfc-数据交换格式">NDEF (NFC 数据交换格式)</a></h1>
 <blockquote>
-<p>背景说明：</p>
-<p>比如开发某个功能创建了一个临时开发分支，开发完成后合并到 develop 分支顺便删除了这个临时开发分支。后续又想继续开发这个功能时，<strong>不能再创建同名的临时开发分支了</strong>。</p>
+<p>相关术语：</p>
+<ul>
+<li>
+<p>NDEF : NFC Data Exchange Format</p>
+</li>
+<li>
+<p>NFC Record</p>
+</li>
+<li>
+<p>NFC Forum</p>
+</li>
+<li>
+<p>RTD : Record Type Definition</p>
+</li>
+<li>
+<p>MIME : Multipurpose Internet Mail Extensions 多用途互联网邮件扩展</p>
+</li>
+<li>
+<p>TNF : Type Name Format</p>
+</li>
+</ul>
 </blockquote>
-<h4 id="原因说明"><a class="header" href="#原因说明">原因说明</a></h4>
+<h2 id="ndef-和-nfc-record-之间的关系"><a class="header" href="#ndef-和-nfc-record-之间的关系">NDEF 和 NFC Record 之间的关系</a></h2>
+<p>根据 <code>NFC Forum</code> 的定义：</p>
+<ul>
+<li><code>R/W</code> 模式下，NFC 设备之间每一次交互的数据都会封装在一个 <code>NDEF Message</code> 中</li>
+<li>而一个 <code>NDEF Message</code> 可以包含多个 <code>NFC Record</code></li>
+<li>真正的数据则封装在 <code>NFC Record</code> 中</li>
+<li>下图展示了 <code>NDEF Message</code> 和 <code>NFC Record</code> 之间的关系。</li>
+</ul>
+<p><img src="./pics/pic-01.webp" alt="pic-01"></p>
+<p>由上图可知：</p>
 <ul>
 <li>
-<p><strong>Git 会混乱</strong></p>
+<p>一个 <code>NDEF Message</code> 可包含一个或多个 <code>NFC Record</code></p>
+</li>
+<li>
+<p>在一个 <code>NDEF Message</code>中</p>
 <ul>
 <li>
-<p>删掉的旧分支 = 历史版本</p>
+<p>第一个 <code>NFC Record</code> 需置其 <code>MB</code> (<code>Message Begin</code>) 位为 1，表示它是该 <code>NDEF Message</code> 中的第一个 <code>NFC Record</code></p>
 </li>
 <li>
-<p>新建的同名分支 = 新版本</p>
-</li>
-<li>
-<p>但 Git 会<strong>残留历史记录</strong>，容易合并出错、冲突乱飞。</p>
+<p>最后一个 <code>NFC Record</code> 需设置 <code>ME</code> (<code>Message End</code>) 位为 1，表示它是该 <code>NDEF Message</code> 中最后一个 <code>NFC Record</code></p>
 </li>
 </ul>
 </li>
-<li>
-<p><strong>版本追踪会乱</strong></p>
+</ul>
+<h2 id="nfc-record-数据结构"><a class="header" href="#nfc-record-数据结构">NFC Record 数据结构</a></h2>
+<p><code>NFC Record</code> 本身的组织结构如下所示</p>
+<p><img src="./pics/pic-02.webp" alt="pic-02"></p>
+<p><code>NFC Record</code> 分为两大部分</p>
 <ul>
-<li>别人看日志：<code>feat/noboot-app/Main</code> 这个分支<strong>被删了又建、建了又删</strong>，完全不知道哪个是最新、哪个是历史。</li>
+<li><code>NFC Record Header</code>（头部信息）</li>
+<li><code>Payload</code>（数据载荷）</li>
 </ul>
-</li>
-<li>
-<p><strong>功能已经合并到 develop，它就 “结束了”</strong></p>
-<ul>
-<li>这个分支的使命已经完成，<strong>不应该复活</strong>。</li>
-</ul>
-</li>
-</ul>
-<h4 id="标准规范"><a class="header" href="#标准规范">标准规范</a></h4>
-<p><strong>基础名只用一次，后续迭代加固定后缀，永不复用同名空分支</strong></p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>场景</th><th>后缀</th></tr>
-</thead>
-<tbody>
-<tr><td>功能新增 / 扩展<br />（在原有基础上加新功能）</td><td><code>-extend</code> / <code>-addon</code></td></tr>
-<tr><td>功能优化 / 重构<br />（不改逻辑，梳理代码、结构、可读性）</td><td><code>-refactor</code> / <code>-optimize</code></td></tr>
-<tr><td>版本迭代大更新<br />（改动比较大，相当于第二版）</td><td><code>-v2</code>、<code>-v3</code> 依次累加</td></tr>
-<tr><td>修复该功能遗留 Bug</td><td>直接换类型为 <code>fix</code>，复用模块名即可，不用加多余后缀</td></tr>
-<tr><td>适配移植 / 适配新芯片</td><td><code>-adapt</code></td></tr>
-<tr><td>精简裁剪 / 去掉冗余代码</td><td><code>-trim</code></td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="三提交信息规范"><a class="header" href="#三提交信息规范">三、提交信息规范</a></h2>
-<h3 id="标准通用格式"><a class="header" href="#标准通用格式"><strong>标准通用格式</strong></a></h3>
-<pre><code>临时开发分支名: &lt;简短描述&gt;
-</code></pre>
-<p>提交信息的开头使用临时开发分支名，这样开发完合并之后的时候，从 develop 的日志中可以清楚的梳理开发历史。</p>
-<p><strong>示例：</strong></p>
-<p>新建了一个统一入口头文件，用来统一管理、调用底层 MCU SDK，做工程标准化收口。</p>
-<pre><code>feat/noboot-app/Main: Create mcu-device.h as a common standard entry for accessing the MCU SDK
-</code></pre>
-<ul>
-<li>临时开发分支名 - feat/noboot-app//Main</li>
-<li>描述 - Create mcu-device.h as a common standard entry for accessing the MCU SDK</li>
-</ul>
-<h3 id="子模块专属强制格式"><a class="header" href="#子模块专属强制格式">子模块专属强制格式</a></h3>
-<pre><code>submodule/&lt;子模块路径&gt;: &lt;操作&gt; &lt;描述&gt; @&lt;版本信息&gt;
-</code></pre>
-<p><strong>严格规则</strong></p>
+<h3 id="record-header"><a class="header" href="#record-header">Record Header</a></h3>
+<p><code>Record Header</code> 中最重要的是其第一字节。该字节有 6 个标志信息，分别如下</p>
 <ol>
-<li><strong>类型固定</strong>：<code>submodule</code></li>
-<li><strong>操作仅限 3 种</strong>：<code>add</code> / <code>update</code> / <code>remove</code></li>
-<li><strong>add 必须带</strong>：初始版本（tag /hash）</li>
-<li><strong>update 必须带</strong>：目标版本（tag /hash）</li>
-<li><strong>版本格式</strong>：<code>@v1.0.0</code> 或 <code>@a1b2c3d</code></li>
-</ol>
-<p><strong>示例</strong></p>
-<ol>
-<li>
-<p>添加子模块</p>
-<pre><code>submodule/libs/STM32_HAL: add official HAL library @v1.8.5
-
-submodule/libs/FreeRTOS/: add RTOS kernel @v10.4.6
-</code></pre>
+<li><code>MB</code>（<code>Message Begin</code>）</li>
+<li><code>ME</code>（<code>Message End</code>）</li>
+<li><code>CF</code>（<code>Chunk Flag</code>）
+<ul>
+<li>表示该 <code>Record</code> 是否为分片 <code>Record</code></li>
+</ul>
 </li>
-<li>
-<p>更新子模块</p>
-<pre><code>submodule/libs/STM32_HAL: update bugfix version @v1.8.6
-
-submodule/libs/FreeRTOS: update to latest commit @8e2dc4f
-</code></pre>
+<li><code>SR</code>（<code>Short Record</code>）
+<ul>
+<li>如果该标志被设置，则图中的 4 个 <code>Payload Length</code> 字段仅需一个，这表明 <code>Payload</code> 数据长度将限制在 255 字节以内</li>
+</ul>
 </li>
-<li>
-<p>删除子模块</p>
-<pre><code>submodule/libs/Deprecated: remove unused driver submodule
-</code></pre>
+<li><code>IL</code>（<code>ID Length</code>）
+<ul>
+<li>用于指明 <code>Header</code> 中是否包含 <code>ID Length</code> 和 <code>ID</code> 这两个字段</li>
+</ul>
+</li>
+<li><code>TNF</code>（<code>Type Name Format</code>）
+<ul>
+<li>用于指明 <code>Payload</code> 的类型，<code>NFC Forum</code> 定义了一些常用的 <code>Payload</code> 类型，详情见下文分析</li>
+</ul>
 </li>
 </ol>
-<h2 id="4-pr"><a class="header" href="#4-pr">4. PR</a></h2>
-<p><strong>Pull Request (PR)</strong>:</p>
-<ul>
-<li>PR 是在 GitHub 上的术语，用于请求将一个分支的更改合并到另一个分支（通常是主分支或开发分支）。</li>
-<li>开发者通过 PR 提交代码更改，其他团队成员可以查看、讨论和审查这些更改。</li>
-</ul>
-<h3 id="命令形式仿真-pr-操作"><a class="header" href="#命令形式仿真-pr-操作">命令形式仿真 PR 操作</a></h3>
-<blockquote class="blockquote-tag blockquote-tag-note">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>当使用 Github、Gitee 等平台时，PR 提供代码审查的功能，但当一个人开发并且不使用这些平台时，可以简化为合并即可，以下提供命令形式的仿真 PR 操作。</p>
-<p>当在某个临时开发分支上完成了任务，就可以准备将此分支合并到 develop 分支了。</p>
-<p>使用 Git 管理的核心就是：<strong>一个分支 = 一个独立任务</strong></p>
-</blockquote>
+<p><code>Record Header</code> 其他字节如下</p>
 <ol>
 <li>
-<p>切换到 <strong>接收方</strong> 分支</p>
-<pre><code class="language-shell">git checkout develop
-</code></pre>
+<p><code>Type Length</code></p>
+<ul>
+<li>指明 <code>Record Header</code> 中 <code>Type</code> 字段的长度</li>
+</ul>
 </li>
 <li>
-<p>合并</p>
-<pre><code class="language-shell">git merge feat/noboot-app/Main
-</code></pre>
+<p><code>Payload Length</code></p>
+<ul>
+<li>指明 <code>Payload</code> 字段的长度</li>
+<li>如果 <code>SR</code> 标志被设置，则 <code>Record Header</code> 仅包含一个 <code>Payload length</code> 字节</li>
+</ul>
 </li>
 <li>
-<p>删除临时开发分支</p>
-<pre><code class="language-shell">git branch -d feat/noboot-app/Main
-</code></pre>
+<p><code>ID Length</code></p>
+<ul>
+<li>指明 <code>ID</code> 字段的长度。如图所示 <code>IL</code> 标志未设置，则 <code>ID Length</code> 和 <code>ID</code> 字段都不存在</li>
+</ul>
+</li>
+<li>
+<p><code>Type</code></p>
+<ul>
+<li>表明 <code>Payload</code> 的类型
+<code>NFC Forum</code> 定义了诸如 <code>URI</code>、<code>MIME</code> 等类型的 <code>Type</code> ，其目的是方便不同的应用来处理不同 <code>Type</code> 的数据，例如 <code>URI</code> 类型的数据就交给浏览器来处理</li>
+</ul>
+</li>
+<li>
+<p><code>ID</code></p>
+<p>需要配合 <code>URI</code> 类型的 <code>Payload</code> 一起使用，它使得一个 <code>NFC Record</code> 能通过 <code>ID</code> 来指向另外一个 <code>NFC Record</code>。</p>
 </li>
 </ol>
-<h3 id="gitee-平台上-pr"><a class="header" href="#gitee-平台上-pr">Gitee 平台上 PR</a></h3>
+<h2 id="tnf"><a class="header" href="#tnf">TNF</a></h2>
+<p><code>TNF</code> 用于描述一个 <code>NFC Record</code> 中 <code>Payload</code> 的类型，为了方便应用程序能正确解析 <code>NFC Record</code> 中的数据，<code>NFC Forum</code> 规定了一些常用的数据类型，如下图所示</p>
+<p><img src="./pics/pic-03.webp" alt="pic-03"></p>
+<p>目前 NFC 支持七种数据类型：</p>
+<ol>
+<li>
+<p><code>Empty</code></p>
+<ul>
+<li>表示该 <code>Record</code> 中没有数据，即相当于一个空的 <code>NFC Record</code></li>
+</ul>
+</li>
+<li>
+<p><code>NFC Forum Well-Known Type</code></p>
 <ul>
 <li>
-<p>当在某个临时开发分支上完成了任务，可以将此分支推送到远端仓库。</p>
+<p>由 <code>NFC Forum</code> 定义的一些较为常用的数据类型，包括 <code>URI</code>、<code>TEXT</code> 等</p>
 </li>
 <li>
-<p>之后在 Gitee 的仓库中点击 <code>Pull Requests</code>，点击 <code>新建 Pull Request</code>。选择源分支为此临时开发分支，目标分支为 develop 分支。</p>
-</li>
-<li>
-<p>填写提交信息，创建 Pull Request</p>
-</li>
-<li>
-<p>完成审查、测试。</p>
-</li>
-<li>
-<p>配置合并选项</p>
-<ul>
-<li>
-<p>合并选项：合并后删除提交分支（默认不勾选）</p>
-<p>一般会选择这个选项，因为这个临时分支的使命已经结束了。</p>
-<p>注意，这只是删除了远端仓库中的这个分支，本地的仍需要自己去删除。</p>
-</li>
-<li>
-<p>合并选项：合并后关闭提到的 Issue（默认勾选）</p>
-</li>
-<li>
-<p>合并选项：接受 Pull Request 时使用<strong>扁平化 (Squash) 合并</strong></p>
-<p>临时开发分支肯定会有多条提交记录，使用 Squash 合并时会将这个分支的多个提交压缩成 1 条提交，使得目标分支历史干净。</p>
-<p>不过，因为前面的 <strong>提交信息规范</strong> 中规定了提交信息必须以分支名开头，就是不使用 Squash 合并的方式，也能一眼看出这些提交是来自同一个功能分支的，不会乱。</p>
+<p>其格式遵循 <code>NFC Forum RTD（Record Type Definition）</code> 规范，下文将介绍</p>
 </li>
 </ul>
 </li>
-</ul>
-<blockquote class="blockquote-tag blockquote-tag-note">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>注意，远端删除了某个分支，本地仓库可不知道远端分支信息改变了，本地分支和远端分支是独立的。</p>
-<p>可以执行以下操作来同步分支信息</p>
-<pre><code class="language-shell"># 切换到 develop 分支
-git checkout develop
-
-# 同步远端分支，把已经删除的远端分支标记为已删除
-# 清理掉本地记录里那些已经在远端被删除的分支信息
-# 让 git branch -a 看起来更干净，但不会影响本地的实际分支。
-git fetch --prune
-
-# 查看所有分支信息，包括远端的
-git branch -a
-
-# 如果远端删除了临时开发分支，想把本地分支也删除掉
-git branch -d 本地临时开发分支名
-
-# 再次查看所有分支信息，可以看到本地的临时开发分支被删除了
-git branch -a
-</code></pre>
-</blockquote>
-<h3 id="pr-草稿"><a class="header" href="#pr-草稿">PR 草稿</a></h3>
-<p>在创建 Pull Request 的时候，还可以选择创建 PR 草稿。</p>
-<p>PR 草稿就是<strong>未完成、待完善的半成品 PR</strong>，相当于你开了个 “占坑” 的 PR，先让别人看到你在做什么，但还没准备好被合并。</p>
-<p><strong>PR 草稿的特点</strong></p>
+<li>
+<p><code>MIME</code></p>
 <ul>
 <li>
-<p><strong>不能被合并</strong></p>
-<p>草稿状态的 PR，合并按钮是灰色的，只有你点「标记为可合并」后，才允许别人审核和合并。</p>
+<p><code>Multipurpose Internet Mail Extensions</code> 的缩写，遵循 RFC2046 规范</p>
 </li>
 <li>
-<p><strong>合开发中、未完成的代码</strong></p>
-<p>比如你正在写一个功能，还没写完，但想：</p>
+<p>例如，当 <code>TNF</code> 取值为 <code>MIME</code> 时，其 <code>Type</code> 字段取值可为 <code>"text/plain"</code> 或 <code>"image/png"</code> 等</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>Absolute URI</code></p>
 <ul>
 <li>
-<p>先提交上去做备份</p>
+<p>绝对 <code>URI</code>，遵循 <code>RFC 3986</code> 规范</p>
 </li>
 <li>
-<p>让别人提前看看思路</p>
-</li>
-<li>
-<p>或者自己先记录一下变更，避免忘记</p>
+<p>例如，某文件的绝对 <code>URI</code> 为 <code>"http://android.com/robots.txt"</code>，而其相对 <code>URI</code> 则为 <code>"robots.txt"</code>。</p>
 </li>
 </ul>
-<p>就可以先创建成草稿 PR。</p>
 </li>
 <li>
-<p><strong>可以随时更新、补充</strong></p>
-<p>后续继续往这个分支 push 提交，草稿 PR 会自动更新，写完再改成正式 PR 就行。</p>
+<p><code>NFC Forum External Type</code></p>
+<ul>
+<li>也由 <code>NFC Forum</code> 的 <code>RTD</code> 规范定义，下文将介绍它</li>
+</ul>
+</li>
+<li>
+<p><code>Unknown</code></p>
+<ul>
+<li>
+<p>代表 <code>Payload</code> 中的数据类型未知</p>
+</li>
+<li>
+<p>它和 <code>MIME</code> 类型 <code>"application/octet-stream"</code> 有些类似，这种类型的数据由相应的应用程序来解析</p>
 </li>
 </ul>
+</li>
+<li>
+<p><code>Unchanged</code></p>
+<p>这种类型的数据用于 <code>NFC Record</code> 分片。</p>
+<p>例如一个大的数据需要通过多个NFC Record来承载，除第一个 NFC Record 分片外，该数据对应的其他 <code>NFC Record</code> 分片都必须设置TNF为 <code>Unchanged</code> 。</p>
+<p>关于这部分内容，读者可参考 NDEF 规范的2.3.3节 <code>"Record Chunks"</code></p>
+<p>在 <code>TNF</code> 七大类型中，<code>NFC Forum</code> 通过 <code>RTD</code> 规范定义了其中的 <code>WKT（Well-KnownType）</code>和<code>External Type</code> 两种类型。</p>
+</li>
+</ol>
+<p><code>WKT</code> 是 <code>NFC Forum</code> 自己定义的一些常用数据类型，目前常用类型如下</p>
+<ul>
+<li><code>URI Record Type</code>
+<ul>
+<li>用于存储 <code>URI</code> 数据，对应 <code>Type</code> 字段取值为 <code>U</code></li>
+</ul>
+</li>
+<li><code>Text Record Type</code>
+<ul>
+<li>用于存储文本数据，对应 <code>Type</code> 字段取值为 <code>T</code></li>
+</ul>
+</li>
+<li><code>Signature Record Type</code>
+<ul>
+<li>用于存储数字签名数据，对应 <code>Type</code> 字段取值为 <code>Sig</code></li>
+</ul>
+</li>
+<li><code>Smart Poster Record Type</code>
+<ul>
+<li>智能海报，用于存储与该海报相关的一些资讯信息，如图片、相关介绍等，对应 <code>Type</code> 字段取值为 <code>Sp</code></li>
+</ul>
+</li>
+<li><code>Generic Control Record Type</code>
+<ul>
+<li>用于传递控制信息，对应 <code>Type</code> 字段取值为 <code>Gc</code></li>
+</ul>
+</li>
+<li><code>External Type</code>
+<ul>
+<li>为第三方组织定义的类型，目前 <code>NFC Forum</code> 没有定义相关的数据类型。</li>
+</ul>
+</li>
+</ul>
+<h2 id="nfc-record-实例"><a class="header" href="#nfc-record-实例">NFC Record 实例</a></h2>
+<h3 id="uri-record-type-实例"><a class="header" href="#uri-record-type-实例">URI Record Type 实例</a></h3>
+<p><code>URI Record Type</code> 属于 <code>NFC Forum Well-known Type</code> 的一种，其对应的 <code>Type</code> 字段取值为 <code>U</code>。</p>
+<p>对于这种类型的 <code>NFC Record</code>，其 <code>Payload</code> 组织结构如表所示</p>
+<p><img src="./pics/pic-04.webp" alt="pic-04"></p>
+<p>在 <code>URI Record Payload</code> 中，第一个字节指明 <code>URI</code> 的 <code>ID</code> 码，下表为 <code>NFC Forum</code> 定义的几种 <code>ID</code>码</p>
+<p><img src="./pics/pic-05.webp" alt="pic-05"></p>
+<p>了解上述信息后，来看  <code>http://www.nfc.com </code>这样的信息该如何封装为一个 <code>NDEF</code> 消息，下图所示为<code>NDEF</code> 消息各字段的取值情况</p>
+<p><img src="./pics/pic-06.webp" alt=""></p>
+<ul>
+<li>由于该 <code>NDEF</code> 消息只包含一个 <code>NFC Record</code>，所以这个唯一的 <code>NFC Record</code> 将设置 <code>MB</code> 和 <code>ME</code> 标志位为 <code>1</code> 。</li>
+<li>由于数据量小于 255 字节，所以 <code>SR</code> 标志位为 <code>1</code>。</li>
+<li>该 <code>Record</code> 携带的数据属于 <code>URI</code> 类型，它为 <code>Well-Known Type</code> 的一种，所以 <code>TNF</code> 取值为 0x01。</li>
+<li><code>Type Length</code> 字段取值为 <code>0x01</code> ，对应的 <code>Type</code> 字段取值为 <code>U</code>，代表 <code>URI RecordType</code></li>
+<li>根据本节对 <code>URI Record</code> 的介绍，这种类型 <code>Record</code> 的 <code>Payload</code> 包含 <code>ID Code</code> 和 <code>data</code> 两个
+部分。
+<ul>
+<li><code>ID Code</code> 取值为 <code>0x01</code> 占据 1 字节（代表 <code>http://www</code> ）</li>
+<li><code>data</code> 为 <code>nfc.com</code> 占据 7 字节</li>
+<li>所以整个 <code>Payload</code> 长度为 8 字节，故 <code>Payload length</code> 字段取值为 0x08。</li>
+</ul>
+</li>
+</ul>
+<p>当应用程序获取 <code>Payload</code> 信息后，将根据 <code>ID Code</code> 和 <code>Data</code> 的取值最终计算出对应的 <code>URI</code> 为 <code>http://www.nfc.com</code></p>
+<h3 id="text-record-type实例"><a class="header" href="#text-record-type实例">Text Record Type实例</a></h3>
+<p><code>Text Record Type</code> 和 <code>URI Record Type</code> 类似，其 <code>Payload</code> 组织结构如下表所示。</p>
+<p><img src="./pics/pic-07.webp" alt=""></p>
+<p><img src="./pics/pic-08.webp" alt=""></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../mcu/code-specification/keil-project-virtual-folder.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../mcu/problem-handling-notes/keil-problem-handling.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../mcu/code-specification/arm-mcu-sdk-structure.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../mcu/connect-nfc/nfc-t5t-cc.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -454,11 +440,11 @@ git branch -a
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../mcu/code-specification/keil-project-virtual-folder.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../mcu/problem-handling-notes/keil-problem-handling.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../mcu/code-specification/arm-mcu-sdk-structure.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../mcu/connect-nfc/nfc-t5t-cc.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

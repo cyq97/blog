@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8b60a83f.js";
+            window.path_to_searchindex_js = "searchindex-65583542.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-f5cf8431.js"></script>
+        <script src="toc-639903a0.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -1087,6 +1087,380 @@ void SysTick_Handler()
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ndef-nfc-数据交换格式"><a class="header" href="#ndef-nfc-数据交换格式">NDEF (NFC 数据交换格式)</a></h1>
+<blockquote>
+<p>相关术语：</p>
+<ul>
+<li>
+<p>NDEF : NFC Data Exchange Format</p>
+</li>
+<li>
+<p>NFC Record</p>
+</li>
+<li>
+<p>NFC Forum</p>
+</li>
+<li>
+<p>RTD : Record Type Definition</p>
+</li>
+<li>
+<p>MIME : Multipurpose Internet Mail Extensions 多用途互联网邮件扩展</p>
+</li>
+<li>
+<p>TNF : Type Name Format</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="ndef-和-nfc-record-之间的关系"><a class="header" href="#ndef-和-nfc-record-之间的关系">NDEF 和 NFC Record 之间的关系</a></h2>
+<p>根据 <code>NFC Forum</code> 的定义：</p>
+<ul>
+<li><code>R/W</code> 模式下，NFC 设备之间每一次交互的数据都会封装在一个 <code>NDEF Message</code> 中</li>
+<li>而一个 <code>NDEF Message</code> 可以包含多个 <code>NFC Record</code></li>
+<li>真正的数据则封装在 <code>NFC Record</code> 中</li>
+<li>下图展示了 <code>NDEF Message</code> 和 <code>NFC Record</code> 之间的关系。</li>
+</ul>
+<p><img src="mcu/connect-nfc/pics/pic-01.webp" alt="pic-01"></p>
+<p>由上图可知：</p>
+<ul>
+<li>
+<p>一个 <code>NDEF Message</code> 可包含一个或多个 <code>NFC Record</code></p>
+</li>
+<li>
+<p>在一个 <code>NDEF Message</code>中</p>
+<ul>
+<li>
+<p>第一个 <code>NFC Record</code> 需置其 <code>MB</code> (<code>Message Begin</code>) 位为 1，表示它是该 <code>NDEF Message</code> 中的第一个 <code>NFC Record</code></p>
+</li>
+<li>
+<p>最后一个 <code>NFC Record</code> 需设置 <code>ME</code> (<code>Message End</code>) 位为 1，表示它是该 <code>NDEF Message</code> 中最后一个 <code>NFC Record</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="nfc-record-数据结构"><a class="header" href="#nfc-record-数据结构">NFC Record 数据结构</a></h2>
+<p><code>NFC Record</code> 本身的组织结构如下所示</p>
+<p><img src="mcu/connect-nfc/pics/pic-02.webp" alt="pic-02"></p>
+<p><code>NFC Record</code> 分为两大部分</p>
+<ul>
+<li><code>NFC Record Header</code>（头部信息）</li>
+<li><code>Payload</code>（数据载荷）</li>
+</ul>
+<h3 id="record-header"><a class="header" href="#record-header">Record Header</a></h3>
+<p><code>Record Header</code> 中最重要的是其第一字节。该字节有 6 个标志信息，分别如下</p>
+<ol>
+<li><code>MB</code>（<code>Message Begin</code>）</li>
+<li><code>ME</code>（<code>Message End</code>）</li>
+<li><code>CF</code>（<code>Chunk Flag</code>）
+<ul>
+<li>表示该 <code>Record</code> 是否为分片 <code>Record</code></li>
+</ul>
+</li>
+<li><code>SR</code>（<code>Short Record</code>）
+<ul>
+<li>如果该标志被设置，则图中的 4 个 <code>Payload Length</code> 字段仅需一个，这表明 <code>Payload</code> 数据长度将限制在 255 字节以内</li>
+</ul>
+</li>
+<li><code>IL</code>（<code>ID Length</code>）
+<ul>
+<li>用于指明 <code>Header</code> 中是否包含 <code>ID Length</code> 和 <code>ID</code> 这两个字段</li>
+</ul>
+</li>
+<li><code>TNF</code>（<code>Type Name Format</code>）
+<ul>
+<li>用于指明 <code>Payload</code> 的类型，<code>NFC Forum</code> 定义了一些常用的 <code>Payload</code> 类型，详情见下文分析</li>
+</ul>
+</li>
+</ol>
+<p><code>Record Header</code> 其他字节如下</p>
+<ol>
+<li>
+<p><code>Type Length</code></p>
+<ul>
+<li>指明 <code>Record Header</code> 中 <code>Type</code> 字段的长度</li>
+</ul>
+</li>
+<li>
+<p><code>Payload Length</code></p>
+<ul>
+<li>指明 <code>Payload</code> 字段的长度</li>
+<li>如果 <code>SR</code> 标志被设置，则 <code>Record Header</code> 仅包含一个 <code>Payload length</code> 字节</li>
+</ul>
+</li>
+<li>
+<p><code>ID Length</code></p>
+<ul>
+<li>指明 <code>ID</code> 字段的长度。如图所示 <code>IL</code> 标志未设置，则 <code>ID Length</code> 和 <code>ID</code> 字段都不存在</li>
+</ul>
+</li>
+<li>
+<p><code>Type</code></p>
+<ul>
+<li>表明 <code>Payload</code> 的类型
+<code>NFC Forum</code> 定义了诸如 <code>URI</code>、<code>MIME</code> 等类型的 <code>Type</code> ，其目的是方便不同的应用来处理不同 <code>Type</code> 的数据，例如 <code>URI</code> 类型的数据就交给浏览器来处理</li>
+</ul>
+</li>
+<li>
+<p><code>ID</code></p>
+<p>需要配合 <code>URI</code> 类型的 <code>Payload</code> 一起使用，它使得一个 <code>NFC Record</code> 能通过 <code>ID</code> 来指向另外一个 <code>NFC Record</code>。</p>
+</li>
+</ol>
+<h2 id="tnf"><a class="header" href="#tnf">TNF</a></h2>
+<p><code>TNF</code> 用于描述一个 <code>NFC Record</code> 中 <code>Payload</code> 的类型，为了方便应用程序能正确解析 <code>NFC Record</code> 中的数据，<code>NFC Forum</code> 规定了一些常用的数据类型，如下图所示</p>
+<p><img src="mcu/connect-nfc/pics/pic-03.webp" alt="pic-03"></p>
+<p>目前 NFC 支持七种数据类型：</p>
+<ol>
+<li>
+<p><code>Empty</code></p>
+<ul>
+<li>表示该 <code>Record</code> 中没有数据，即相当于一个空的 <code>NFC Record</code></li>
+</ul>
+</li>
+<li>
+<p><code>NFC Forum Well-Known Type</code></p>
+<ul>
+<li>
+<p>由 <code>NFC Forum</code> 定义的一些较为常用的数据类型，包括 <code>URI</code>、<code>TEXT</code> 等</p>
+</li>
+<li>
+<p>其格式遵循 <code>NFC Forum RTD（Record Type Definition）</code> 规范，下文将介绍</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>MIME</code></p>
+<ul>
+<li>
+<p><code>Multipurpose Internet Mail Extensions</code> 的缩写，遵循 RFC2046 规范</p>
+</li>
+<li>
+<p>例如，当 <code>TNF</code> 取值为 <code>MIME</code> 时，其 <code>Type</code> 字段取值可为 <code>"text/plain"</code> 或 <code>"image/png"</code> 等</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>Absolute URI</code></p>
+<ul>
+<li>
+<p>绝对 <code>URI</code>，遵循 <code>RFC 3986</code> 规范</p>
+</li>
+<li>
+<p>例如，某文件的绝对 <code>URI</code> 为 <code>"http://android.com/robots.txt"</code>，而其相对 <code>URI</code> 则为 <code>"robots.txt"</code>。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>NFC Forum External Type</code></p>
+<ul>
+<li>也由 <code>NFC Forum</code> 的 <code>RTD</code> 规范定义，下文将介绍它</li>
+</ul>
+</li>
+<li>
+<p><code>Unknown</code></p>
+<ul>
+<li>
+<p>代表 <code>Payload</code> 中的数据类型未知</p>
+</li>
+<li>
+<p>它和 <code>MIME</code> 类型 <code>"application/octet-stream"</code> 有些类似，这种类型的数据由相应的应用程序来解析</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>Unchanged</code></p>
+<p>这种类型的数据用于 <code>NFC Record</code> 分片。</p>
+<p>例如一个大的数据需要通过多个NFC Record来承载，除第一个 NFC Record 分片外，该数据对应的其他 <code>NFC Record</code> 分片都必须设置TNF为 <code>Unchanged</code> 。</p>
+<p>关于这部分内容，读者可参考 NDEF 规范的2.3.3节 <code>"Record Chunks"</code></p>
+<p>在 <code>TNF</code> 七大类型中，<code>NFC Forum</code> 通过 <code>RTD</code> 规范定义了其中的 <code>WKT（Well-KnownType）</code>和<code>External Type</code> 两种类型。</p>
+</li>
+</ol>
+<p><code>WKT</code> 是 <code>NFC Forum</code> 自己定义的一些常用数据类型，目前常用类型如下</p>
+<ul>
+<li><code>URI Record Type</code>
+<ul>
+<li>用于存储 <code>URI</code> 数据，对应 <code>Type</code> 字段取值为 <code>U</code></li>
+</ul>
+</li>
+<li><code>Text Record Type</code>
+<ul>
+<li>用于存储文本数据，对应 <code>Type</code> 字段取值为 <code>T</code></li>
+</ul>
+</li>
+<li><code>Signature Record Type</code>
+<ul>
+<li>用于存储数字签名数据，对应 <code>Type</code> 字段取值为 <code>Sig</code></li>
+</ul>
+</li>
+<li><code>Smart Poster Record Type</code>
+<ul>
+<li>智能海报，用于存储与该海报相关的一些资讯信息，如图片、相关介绍等，对应 <code>Type</code> 字段取值为 <code>Sp</code></li>
+</ul>
+</li>
+<li><code>Generic Control Record Type</code>
+<ul>
+<li>用于传递控制信息，对应 <code>Type</code> 字段取值为 <code>Gc</code></li>
+</ul>
+</li>
+<li><code>External Type</code>
+<ul>
+<li>为第三方组织定义的类型，目前 <code>NFC Forum</code> 没有定义相关的数据类型。</li>
+</ul>
+</li>
+</ul>
+<h2 id="nfc-record-实例"><a class="header" href="#nfc-record-实例">NFC Record 实例</a></h2>
+<h3 id="uri-record-type-实例"><a class="header" href="#uri-record-type-实例">URI Record Type 实例</a></h3>
+<p><code>URI Record Type</code> 属于 <code>NFC Forum Well-known Type</code> 的一种，其对应的 <code>Type</code> 字段取值为 <code>U</code>。</p>
+<p>对于这种类型的 <code>NFC Record</code>，其 <code>Payload</code> 组织结构如表所示</p>
+<p><img src="mcu/connect-nfc/pics/pic-04.webp" alt="pic-04"></p>
+<p>在 <code>URI Record Payload</code> 中，第一个字节指明 <code>URI</code> 的 <code>ID</code> 码，下表为 <code>NFC Forum</code> 定义的几种 <code>ID</code>码</p>
+<p><img src="mcu/connect-nfc/pics/pic-05.webp" alt="pic-05"></p>
+<p>了解上述信息后，来看  <code>http://www.nfc.com </code>这样的信息该如何封装为一个 <code>NDEF</code> 消息，下图所示为<code>NDEF</code> 消息各字段的取值情况</p>
+<p><img src="mcu/connect-nfc/pics/pic-06.webp" alt=""></p>
+<ul>
+<li>由于该 <code>NDEF</code> 消息只包含一个 <code>NFC Record</code>，所以这个唯一的 <code>NFC Record</code> 将设置 <code>MB</code> 和 <code>ME</code> 标志位为 <code>1</code> 。</li>
+<li>由于数据量小于 255 字节，所以 <code>SR</code> 标志位为 <code>1</code>。</li>
+<li>该 <code>Record</code> 携带的数据属于 <code>URI</code> 类型，它为 <code>Well-Known Type</code> 的一种，所以 <code>TNF</code> 取值为 0x01。</li>
+<li><code>Type Length</code> 字段取值为 <code>0x01</code> ，对应的 <code>Type</code> 字段取值为 <code>U</code>，代表 <code>URI RecordType</code></li>
+<li>根据本节对 <code>URI Record</code> 的介绍，这种类型 <code>Record</code> 的 <code>Payload</code> 包含 <code>ID Code</code> 和 <code>data</code> 两个
+部分。
+<ul>
+<li><code>ID Code</code> 取值为 <code>0x01</code> 占据 1 字节（代表 <code>http://www</code> ）</li>
+<li><code>data</code> 为 <code>nfc.com</code> 占据 7 字节</li>
+<li>所以整个 <code>Payload</code> 长度为 8 字节，故 <code>Payload length</code> 字段取值为 0x08。</li>
+</ul>
+</li>
+</ul>
+<p>当应用程序获取 <code>Payload</code> 信息后，将根据 <code>ID Code</code> 和 <code>Data</code> 的取值最终计算出对应的 <code>URI</code> 为 <code>http://www.nfc.com</code></p>
+<h3 id="text-record-type实例"><a class="header" href="#text-record-type实例">Text Record Type实例</a></h3>
+<p><code>Text Record Type</code> 和 <code>URI Record Type</code> 类似，其 <code>Payload</code> 组织结构如下表所示。</p>
+<p><img src="mcu/connect-nfc/pics/pic-07.webp" alt=""></p>
+<p><img src="mcu/connect-nfc/pics/pic-08.webp" alt=""></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="5-类卡的-cc-数据"><a class="header" href="#5-类卡的-cc-数据">5 类卡的 CC 数据</a></h1>
+<p><code>ST25DV16K</code> 遵循 <code>NFC Forum Type 5 Tag (T5T)</code> 规范</p>
+<h2 id="什么是-cc-数据"><a class="header" href="#什么是-cc-数据">什么是 CC 数据</a></h2>
+<p>为了让 <code>NFC</code> 设备（如手机）能正确识别并读取标签上的NDEF消息，标签必须在<strong>存储器起始位置</strong>创建一个标准的 <code>Capability Container (CC)</code> 文件。这个文件相当于标签的 “自我介绍”，描述了其内存布局、支持的读写权限等关键信息。</p>
+<h2 id="st25dvxx-的cc数据"><a class="header" href="#st25dvxx-的cc数据">ST25DVXX 的CC数据</a></h2>
+<p>在每个<strong>用户数据区</strong>的第一个 Block 的开头，都会有一个CC数据。
+根据不同的芯片型号，CC 数据的大小也不一样。</p>
+<ul>
+<li>对于 <code>ST25DV04K</code> 和 <code>ST25DV04KC</code> ，CC 数据占用 4 字节</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>字节偏移</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>Magic number</td></tr>
+<tr><td>1</td><td>Version and access condition</td></tr>
+<tr><td>2</td><td>MLEN</td></tr>
+<tr><td>3</td><td>Additional feature information</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>对于 <code>ST25DV16K</code>、<code>ST25DV16KC</code>、<code>ST25DV64K</code>、 <code>ST25DV64KC</code>、<code>ST25TV16K</code>、<code>ST25TV64K</code>，CC 数据占用 8 字节。</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>字节偏移</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>Magic number</td></tr>
+<tr><td>1</td><td>Version and access condition</td></tr>
+<tr><td>2</td><td>MLEN</td></tr>
+<tr><td>3</td><td>Additional feature information</td></tr>
+<tr><td>4-5</td><td>RFU</td></tr>
+<tr><td>6-7</td><td>MLEN</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Magic number</strong></p>
+<ul>
+<li>对于支持<strong>单字节地址模式</strong>的芯片，值是 <code>0xE1</code></li>
+<li>对于支持<strong>双字节地址模式</strong>的芯片，值是 <code>0xE2</code></li>
+<li>对于存储空间大于 2KB 的芯片，就必须用双字节地址模式</li>
+</ul>
+<p><strong>Version and access condition</strong></p>
+<ul>
+<li><code>bit[7:6]</code> ：主版本号，例如 <code>01b = Version 1.x</code></li>
+<li><code>bit[5:4]</code> ：次版本号，例如 <code>00b = Version x.0</code></li>
+<li><code>bit[3:2]</code> ：读取控制
+<ul>
+<li><code>00b</code> = Always</li>
+<li><code>01b</code> = RFU</li>
+<li><code>10b</code> = Proprietary (专有的)</li>
+<li><code>11b</code> = REF</li>
+</ul>
+</li>
+<li><code>bit[1:0]</code> ：写入控制
+<ul>
+<li><code>00b</code> = Always</li>
+<li><code>01b</code> = RFU</li>
+<li><code>10b</code> = Proprietary</li>
+<li><code>11b</code> = Never</li>
+</ul>
+</li>
+</ul>
+<p><strong>MLEN</strong></p>
+<p><code>MLEN (Encode Memory Length) </code>  表示  <code>T5T</code> 卡的 <code>NDEF Message</code> 的数据长度</p>
+<p>实际的数据区域占用的空间大小= <code>MLEN * 8 (单位: 字节)</code></p>
+<p>例如在 <code>ST25DV04KC</code> 的芯片上，因为 CC 数据是 4 个字节，</p>
+<ul>
+<li>
+<p>那么如果用户数据区域都作为 <code>T5T</code> 数据区域，那 <code>MLEN = (512-4) / 8 = 63 = 0x3F</code></p>
+</li>
+<li>
+<p>如果只有一部分用户数据区域作为 <code>T5T</code> 数据区域的话，比如用了 128-Byte，那就是</p>
+<p><code>MLEN = 128 / 8 = 16 = 0x10 Byte</code></p>
+<p>对于更高容量的芯片计算方式也类似，只是需要考虑更大的CC数据</p>
+</li>
+</ul>
+<blockquote>
+<p>但上面的计算方式只适用于iOS系统以及Android Oreo版本或更高版本的系统，对于 Android Oreo 以下版本系统，需按用户数据区域的总大小去计算</p>
+<p>例如小容量芯片，CC 数据是4字节的情况下，MLEN=512/8/64=0x40</p>
+<p>对于大容量芯片，CC 数据是8字节的情况下，MLEN=8192/8=1024=0x400</p>
+<p>这种计算方式不符合 NFC 规范，但是支持 iOS 与所有 Android 版本的正常使用</p>
+</blockquote>
+<p><strong>Additional feature information</strong></p>
+<p><code>CC</code> 数据的第五个字节是其他功能信息，每个 bit 的作用如下：</p>
+<ul>
+<li><code>bit[7:5]</code>  RFU</li>
+<li><code>bit[4]</code>      是否支持专用框架</li>
+<li><code>bit[3]</code>      是否锁定 Block（建议设置为 0）</li>
+<li><code>bit[2:1]</code>  RFU（建议设置为0）</li>
+<li><code>bit[0]</code>      是否支持读取多个 Block 命令</li>
+</ul>
+<h2 id="补充"><a class="header" href="#补充">补充</a></h2>
+<p><code>CC</code> 数据区后面跟着的是 <code>T5T</code> 数据</p>
+<p>在 <code>T5T</code> 数据中包含了 <code>NDEF Message TLV</code>，其中的 <code>TLV</code> 分别代表了 <code>Tag</code>，<code>Length</code>，<code>Value</code></p>
+<p><code>NDEF Message TLV</code> 的格式如下</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>名称</th><th>长度</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr><td>T</td><td>1byte</td><td>固定为 0x03，代表 <code>NDEF Message TLV</code></td></tr>
+<tr><td>L</td><td>1byte</td><td><code>TLV</code> 长度</td></tr>
+<tr><td>V</td><td>N byte</td><td><code>TLV</code> 值 （长度取决于上面的 TLV 长度值）</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>NDEF Message</code>的结束由一个 <code>Tag</code>字段为 <code>0xFE</code> 的 <code>TLV</code> 指示，该 <code>TLV</code> 被称为终止符 <code>TLV</code></p>
+<h2 id="实例说明"><a class="header" href="#实例说明">实例说明</a></h2>
+<p>下面是从 <code>ST25DV16K</code> 中读出的原始数据，我通过 I2C 接口写入了一个 URI : <code>http://git-scm.com</code></p>
+<pre><code>E2 40 00 00 // 8字节CC数据
+00 00 00 FF
+03 10 D1 01 // T: 03, L: 10. 之后是一个 NEDF Record
+0C 55 01 67 // 67: 'g'
+69 74 2D 73 // 69: 'i', 74: 't'
+63 6D 2E 63
+6F 6D FE 00 // FE: 终止
+00 00 00 00
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="ch584-引脚笔记"><a class="header" href="#ch584-引脚笔记">CH584 引脚笔记</a></h1>
 <h2 id="电源引脚"><a class="header" href="#电源引脚">电源引脚</a></h2>
 <ul>
@@ -1138,6 +1512,407 @@ void SysTick_Handler()
 <p><img src="electronic-docs/mcu-wch/pics/pic-01.webp" alt="CH584 电源引脚"></p>
 </li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ch583-sdk-ble-目录例程-1"><a href="#ch583-sdk-ble-目录例程-1" class="header">CH583 SDK BLE 目录例程</a></h1>
+<h2 id="ch583-sdk-ble-目录例程"><a class="header" href="#ch583-sdk-ble-目录例程">CH583 SDK BLE 目录例程</a></h2>
+<p>在 BLE 目录下共有 35 个例程/子目录 和 2 份 PDF 参考手册，按功能分类如下：</p>
+<hr>
+<h3 id="-基础-ble-角色"><a class="header" href="#-基础-ble-角色">🔵 基础 BLE 角色</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>Peripheral</td><td>最基本的外设例程：广播、接受连接、通过自定义 GATT 服务通信</td></tr>
+<tr><td>Central</td><td>中央角色：扫描设备、连接指定外设、发现服务/特征值并读写</td></tr>
+<tr><td>Broadcaster</td><td>广播器：单向发送广播数据（无连接）</td></tr>
+<tr><td>Observer</td><td>观察者：扫描但不连接 BLE 设备，打印发现的广播地址</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-多角色--多连接"><a class="header" href="#-多角色--多连接">🔵 多角色 / 多连接</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>CentPeri</td><td>双角色：同时作为中央（扫描并连接外设）和外设（广播自身）</td></tr>
+<tr><td>MultiCentral</td><td>多连接中央：同时连接最多 3 个外设并读写自定义服务</td></tr>
+<tr><td>MultiCentPeri</td><td>多实例双角色：同时作为多连接中央和多连接外设</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-标准-ble-profile-设备"><a class="header" href="#-标准-ble-profile-设备">🔵 标准 BLE Profile 设备</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>HeartRate</td><td>心率计：实现心率 Profile，周期性发送心率测量值</td></tr>
+<tr><td>CyclingSensor</td><td>骑行传感器：实现 CSC（骑行速度/踏频）Protocol</td></tr>
+<tr><td>RunningSensor</td><td>跑步传感器：实现 RSC（跑步速度/步频）Protocol</td></tr>
+<tr><td>HID_Keyboard</td><td>BLE HID 键盘：周期性发送按键值</td></tr>
+<tr><td>HID_Mouse</td><td>BLE HID 鼠标：周期性发送鼠标坐标</td></tr>
+<tr><td>HID_Consumer</td><td>BLE HID 消费者设备（遥控器）：发送音量、播放/暂停等控制事件</td></tr>
+<tr><td>HID_Touch</td><td>BLE HID 触摸设备：发送触摸坐标</td></tr>
+<tr><td>peripheral_ancs_client</td><td>Apple 通知中心服务（ANCS）客户端：连接 iOS 设备接收/解析通知</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-桥接与通信"><a class="header" href="#-桥接与通信">🔵 桥接与通信</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>BLE_UART</td><td>BLE 转 UART 桥接：UART 数据通过 BLE 转发</td></tr>
+<tr><td>BLE_USB</td><td>BLE 转 USB 桥接：USB 数据通过 BLE 转发</td></tr>
+<tr><td>IoCHub_NET</td><td>物联网控制中心：通过 BLE 实现远程 I/O 控制（如灯控）</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-ota-升级空中升级"><a class="header" href="#-ota-升级空中升级">🔵 OTA 升级（空中升级）</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>BackupUpgrade_OTA</td><td>双镜像（A/B）备份方案 OTA 升级外设</td></tr>
+<tr><td>BackupUpgrade_IAP</td><td>IAP 引导程序：检查镜像标志，备份当前固件后跳转到新应用</td></tr>
+<tr><td>BackupUpgrade_JumpIAP</td><td>上述 IAP 的跳转表/入口</td></tr>
+<tr><td>OnlyUpdateApp_Peripheral</td><td>单镜像 OTA（直接覆盖，无备份）</td></tr>
+<tr><td>OnlyUpdateApp_IAP</td><td>单镜像 IAP 引导程序</td></tr>
+<tr><td>OnlyUpdateApp_JumpIAP</td><td>上述 IAP 的跳转表/入口</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-mesh-组网"><a class="header" href="#-mesh-组网">🔵 Mesh 组网</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>MESH</td><td><strong>BLE Mesh 网络例程集合</strong>，包含 14 个子例程（AliLight 兼容灯节点、供应商通用节点、自配网、低功耗朋友节点、Proxy 代理、配网器等）+ Mesh 库 + 2 份 PDF 手册</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-其他无线通信"><a class="header" href="#-其他无线通信">🔵 其他无线通信</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>LWNS</td><td>轻量级无线网络协议栈：演示广播/组播/单播/可靠传输/Hood 洪泛/Mesh 等多种模式</td></tr>
+<tr><td>RF_PHY</td><td>原始 2.4GHz RF（非 BLE）通信：单信道无连接收发</td></tr>
+<tr><td>RF_PHY_Hop</td><td>原始 2.4GHz RF 通信 + 跳频机制</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-同步广播--扫描"><a class="header" href="#-同步广播--扫描">🔵 同步广播 / 扫描</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>SYNC_ADV</td><td>同步广播器：发送周期性广播序列</td></tr>
+<tr><td>SYNC_SCAN</td><td>同步扫描仪：与周期性广播器同步并接收数据</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-速率测试"><a class="header" href="#-速率测试">🔵 速率测试</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>SpeedTest_Central</td><td>吞吐量测试中央端</td></tr>
+<tr><td>SpeedTest_Peripheral</td><td>吞吐量测试外设端</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-系统测试"><a class="header" href="#-系统测试">🔵 系统/测试</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>目录</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td>HAL</td><td>硬件抽象层：所有例程共享的板级驱动（按键、LED、时钟、休眠等）</td></tr>
+<tr><td>LIB</td><td>BLE 协议栈库文件（libCH58xBLE.a、ROM hex、API 头文件）</td></tr>
+<tr><td>Direct_Test_Mode</td><td>BLE RF 直接测试模式：通过 USB/串口进行 PHY 测试（用于认证）</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="-参考文档"><a class="header" href="#-参考文档">📄 参考文档</a></h3>
+<ul>
+<li><code>沁恒低功耗蓝牙软件开发参考手册.PDF</code> — BLE 软件开发参考</li>
+<li><code>WCH蓝牙空中升级（BLE OTA）.PDF</code> — BLE OTA 升级说明</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="tmos-调度系统使用指南"><a class="header" href="#tmos-调度系统使用指南">TMOS 调度系统使用指南</a></h1>
+<h2 id="概述"><a class="header" href="#概述">概述</a></h2>
+<p>TMOS (Task Management Operating System) 是沁恒 BLE 协议栈内置的一个<strong>轻量级协作式任务调度器</strong>。它不是抢占式 RTOS，不涉及线程、栈切换等复杂概念。核心思想很简单：<strong>每个任务注册一个事件处理函数，系统在 <code>TMOS_SystemProcess()</code> 中轮询调度</strong>。</p>
+<pre><code>main() {
+    TMOS_TimerInit(...);          // 1. 初始化定时器
+    ...
+    TMOS_ProcessEventRegister(handler1);  // 2. 注册任务
+    TMOS_ProcessEventRegister(handler2);
+    ...
+    while(1) {
+        TMOS_SystemProcess();     // 3. 主循环：处理定时器 + 派发事件
+    }
+}
+</code></pre>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<h3 id="时间基准"><a class="header" href="#时间基准">时间基准</a></h3>
+<p>TMOS 的时间单位是 <strong>625μs</strong>（1 个 system tick）。所有定时参数都以 ticks 为单位。</p>
+<pre><code class="language-c">#define SYSTEM_TIME_MICROSEN  625
+#define MS1_TO_SYSTEM_TIME(x)  ((x) * 1000 / SYSTEM_TIME_MICROSEN)  // 毫秒 → ticks
+</code></pre>
+<p>换算关系：</p>
+<ul>
+<li><code>1 ms</code> ≈ 1.6 ticks</li>
+<li><code>1600</code> ticks = 1 秒</li>
+<li><code>3200</code> ticks = 2 秒</li>
+</ul>
+<h3 id="任务-id-tmostaskid"><a class="header" href="#任务-id-tmostaskid">任务 ID (<code>tmosTaskID</code>)</a></h3>
+<p><code>uint8_t</code> 类型，范围 0~255。通过 <code>TMOS_ProcessEventRegister()</code> 获取。</p>
+<h3 id="事件-tmosevents"><a class="header" href="#事件-tmosevents">事件 (<code>tmosEvents</code>)</a></h3>
+<p><code>uint16_t</code> 位掩码，每个 bit 代表一个事件。<strong>低 15 位（bit0~14）由用户自定义</strong>，最高位 <code>SYS_EVENT_MSG</code> (0x8000) 由系统保留，用于消息传递。</p>
+<pre><code class="language-c">#define SYS_EVENT_MSG  0x8000   // 有消息待处理
+#define INVALID_TASK_ID 0xFF    // 非法任务ID
+</code></pre>
+<p>一个任务可以同时被多个事件触发：</p>
+<pre><code class="language-c">uint16 events = SBP_START_DEVICE_EVT | SBP_PARAM_UPDATE_EVT;
+</code></pre>
+<h3 id="任务处理函数"><a class="header" href="#任务处理函数">任务处理函数</a></h3>
+<pre><code class="language-c">typedef tmosEvents (*pTaskEventHandlerFn)(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>返回值是<strong>未处理的事件</strong>。返回 0 表示所有事件都已处理完毕。</p>
+<pre><code class="language-c">uint16 MyTask_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; MY_EVENT_A)     // 检查事件A
+    {
+        // 处理...
+        return (events ^ MY_EVENT_A);  // 清除已处理的事件
+    }
+
+    if (events &amp; SYS_EVENT_MSG)  // 检查消息
+    {
+        uint8 *msg = tmos_msg_receive(task_id);
+        if (msg) {
+            // 处理消息...
+            tmos_msg_deallocate(msg);  // 释放消息
+        }
+        return (events ^ SYS_EVENT_MSG);
+    }
+    return 0;  // 未知事件，全部丢弃
+}
+</code></pre>
+<hr>
+<h2 id="api-参考"><a class="header" href="#api-参考">API 参考</a></h2>
+<h3 id="注册任务"><a class="header" href="#注册任务">注册任务</a></h3>
+<pre><code class="language-c">tmosTaskID TMOS_ProcessEventRegister(pTaskEventHandlerFn eventCb);
+</code></pre>
+<p>返回任务 ID，失败返回 <code>INVALID_TASK_ID</code> (0xFF)。</p>
+<p>示例：</p>
+<pre><code class="language-c">uint8_t MyTaskID;
+MyTaskID = TMOS_ProcessEventRegister(MyTask_ProcessEvent);
+if (MyTaskID == INVALID_TASK_ID) { /* 错误处理 */ }
+</code></pre>
+<h3 id="立即触发事件"><a class="header" href="#立即触发事件">立即触发事件</a></h3>
+<pre><code class="language-c">bStatus_t tmos_set_event(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>将事件立即置位，下次 <code>TMOS_SystemProcess()</code> 时触发。</p>
+<p><strong>注意</strong>：不能在任务自己的事件处理函数内调用 <code>tmos_set_event</code> 给自己设置同一个事件（会导致死循环）。如需重入，用 <code>tmos_start_task</code>。</p>
+<h3 id="延迟触发事件单次"><a class="header" href="#延迟触发事件单次">延迟触发事件（单次）</a></h3>
+<pre><code class="language-c">BOOL tmos_start_task(tmosTaskID taskID, tmosEvents event, tmosTimer time);
+</code></pre>
+<p>在 <code>time</code> 个 ticks 后触发指定事件一次。</p>
+<pre><code class="language-c">// 1 秒后触发 MY_EVENT
+tmos_start_task(MyTaskID, MY_EVENT, 1600);
+// 10ms 后触发
+tmos_start_task(MyTaskID, MY_EVENT, MS1_TO_SYSTEM_TIME(10));
+</code></pre>
+<h3 id="周期触发事件自动重载"><a class="header" href="#周期触发事件自动重载">周期触发事件（自动重载）</a></h3>
+<pre><code class="language-c">bStatus_t tmos_start_reload_task(tmosTaskID taskID, tmosEvents event, tmosTimer time);
+</code></pre>
+<p>与 <code>tmos_start_task</code> 类似，但触发后<strong>自动重新装载</strong>，实现周期性定时。</p>
+<pre><code class="language-c">// 每 500ms 触发一次
+tmos_start_reload_task(MyTaskID, MY_PERIODIC_EVT, MS1_TO_SYSTEM_TIME(500));
+</code></pre>
+<h3 id="停止定时器"><a class="header" href="#停止定时器">停止定时器</a></h3>
+<pre><code class="language-c">bStatus_t tmos_stop_task(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>取消尚未触发的定时事件。</p>
+<h3 id="清除事件"><a class="header" href="#清除事件">清除事件</a></h3>
+<pre><code class="language-c">bStatus_t tmos_clear_event(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>将已触发但尚未处理的事件清除。<strong>不能在自己的事件处理函数内使用。</strong></p>
+<h3 id="查询剩余时间"><a class="header" href="#查询剩余时间">查询剩余时间</a></h3>
+<pre><code class="language-c">tmosTimer tmos_get_task_timer(tmosTaskID taskID, tmosEvents event);
+</code></pre>
+<p>返回该事件距离到期的剩余 ticks 数。</p>
+<hr>
+<h2 id="消息传递"><a class="header" href="#消息传递">消息传递</a></h2>
+<p>TMOS 支持任务间发送消息。消息以 <code>SYS_EVENT_MSG</code> 方式通知接收任务。</p>
+<h3 id="发送消息"><a class="header" href="#发送消息">发送消息</a></h3>
+<pre><code class="language-c">bStatus_t tmos_msg_send(tmosTaskID taskID, uint8_t *msg_ptr);
+</code></pre>
+<p>发送消息后，接收任务的 <code>SYS_EVENT_MSG</code> 事件会被置位。</p>
+<h3 id="分配释放消息"><a class="header" href="#分配释放消息">分配/释放消息</a></h3>
+<pre><code class="language-c">uint8_t *tmos_msg_allocate(uint16_t len);         // 分配消息缓冲区
+bStatus_t tmos_msg_deallocate(uint8_t *msg_ptr);  // 释放消息
+</code></pre>
+<p>发送消息前，必须先用 <code>tmos_msg_allocate</code> 分配内存。接收方处理完后调用 <code>tmos_msg_deallocate</code> 释放。</p>
+<h3 id="接收消息"><a class="header" href="#接收消息">接收消息</a></h3>
+<pre><code class="language-c">uint8_t *tmos_msg_receive(tmosTaskID taskID);
+</code></pre>
+<p>在任务的事件处理函数中，收到 <code>SYS_EVENT_MSG</code> 时调用。返回消息指针，无消息时返回 <code>NULL</code>。</p>
+<h3 id="完整示例发送带数据的消息"><a class="header" href="#完整示例发送带数据的消息">完整示例：发送带数据的消息</a></h3>
+<pre><code class="language-c">// 发送方
+typedef struct {
+    tmos_event_hdr_t hdr;   // 必须第一个字段: {event, status}
+    uint16_t value;
+} my_msg_t;
+
+void send_msg(uint8_t target_task)
+{
+    my_msg_t *msg = (my_msg_t *)tmos_msg_allocate(sizeof(my_msg_t));
+    if (msg) {
+        msg-&gt;hdr.event = MY_CUSTOM_MSG;  // 自定义消息类型
+        msg-&gt;hdr.status = 0;
+        msg-&gt;value = 42;
+        tmos_msg_send(target_task, (uint8_t *)msg);
+    }
+}
+
+// 接收方
+uint16 MyTask_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; SYS_EVENT_MSG) {
+        uint8_t *p = tmos_msg_receive(task_id);
+        while (p) {
+            my_msg_t *msg = (my_msg_t *)p;
+            if (msg-&gt;hdr.event == MY_CUSTOM_MSG) {
+                // 处理 msg-&gt;value
+            }
+            tmos_msg_deallocate(p);
+            p = tmos_msg_receive(task_id);  // 可能有多个消息排队
+        }
+        return (events ^ SYS_EVENT_MSG);
+    }
+    return 0;
+}
+</code></pre>
+<hr>
+<h2 id="实用工具函数"><a class="header" href="#实用工具函数">实用工具函数</a></h2>
+<pre><code class="language-c">void   tmos_memcpy(void *dst, const void *src, uint32_t len);
+void   tmos_memset(void *dst, uint8_t val, uint32_t len);
+BOOL   tmos_memcmp(const void *s1, const void *s2, uint32_t len);
+BOOL   tmos_isbufset(uint8_t *buf, uint8_t val, uint32_t len);
+uint32_t tmos_strlen(char *str);
+uint32_t tmos_rand(void);
+</code></pre>
+<hr>
+<h2 id="常见用法模式"><a class="header" href="#常见用法模式">常见用法模式</a></h2>
+<h3 id="模式-1单次延迟执行"><a class="header" href="#模式-1单次延迟执行">模式 1：单次延迟执行</a></h3>
+<pre><code class="language-c">#define LED_OFF_EVT  0x0001
+
+uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; LED_OFF_EVT) {
+        LED_Off();
+        return (events ^ LED_OFF_EVT);
+    }
+    return 0;
+}
+
+void app_init(void)
+{
+    AppTaskID = TMOS_ProcessEventRegister(App_ProcessEvent);
+    // 按键按下，3 秒后关灯
+    tmos_start_task(AppTaskID, LED_OFF_EVT, MS1_TO_SYSTEM_TIME(3000));
+}
+</code></pre>
+<h3 id="模式-2周期性轮询"><a class="header" href="#模式-2周期性轮询">模式 2：周期性轮询</a></h3>
+<pre><code class="language-c">#define POLL_EVT  0x0002
+
+uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; POLL_EVT) {
+        read_sensor();
+        // 自动重复，无需手动续约
+        return (events ^ POLL_EVT);
+    }
+    return 0;
+}
+
+void app_init(void)
+{
+    AppTaskID = TMOS_ProcessEventRegister(App_ProcessEvent);
+    tmos_start_reload_task(AppTaskID, POLL_EVT, MS1_TO_SYSTEM_TIME(100));
+}
+</code></pre>
+<h3 id="模式-3手动续约"><a class="header" href="#模式-3手动续约">模式 3：手动续约</a></h3>
+<pre><code class="language-c">uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; SEND_EVT) {
+        if (is_ready()) {
+            send_data();
+            tmos_start_task(task_id, SEND_EVT, SEND_INTERVAL);  // 续约
+        }
+        // 不 ready 时不再续约，链自然中断
+        return (events ^ SEND_EVT);
+    }
+    return 0;
+}
+</code></pre>
+<h3 id="模式-4从-ble-回调延迟发送"><a class="header" href="#模式-4从-ble-回调延迟发送">模式 4：从 BLE 回调延迟发送</a></h3>
+<p>TMOS 任务的事件处理函数在<strong>主循环上下文</strong>中执行，而 BLE 消息回调在协议栈内部上下文中执行。如果在回调里直接调用 BLE 发送 API 可能失败，需要通过 TMOS 延迟到主循环执行：</p>
+<pre><code class="language-c">// BLE 回调中（不能直接发数据）
+void on_ble_rx(uint16 conn, uint8_t *data, uint16_t len)
+{
+    // 把数据缓存起来
+    tmos_memcpy(echo_buf, data, len);
+    echo_len = len;
+    echo_conn = conn;
+    // 延迟到下一个 TMOS tick
+    tmos_start_task(AppTaskID, ECHO_SEND_EVT, 1);
+}
+
+// TMOS 任务处理函数（主循环上下文，可以安全调用 BLE API）
+uint16 App_ProcessEvent(uint8 task_id, uint16 events)
+{
+    if (events &amp; ECHO_SEND_EVT) {
+        ch_send(echo_conn, echo_buf, echo_len);
+        return (events ^ ECHO_SEND_EVT);
+    }
+    return 0;
+}
+</code></pre>
+<hr>
+<h2 id="关键注意事项"><a class="header" href="#关键注意事项">关键注意事项</a></h2>
+<ol>
+<li><strong>不要在中断里调用 TMOS API</strong>。TMOS 不是线程安全的，所有操作必须在主循环上下文。</li>
+<li><strong>事件位不要冲突</strong>。每个任务的 bit0~14 可以自由定义，但要确保不同事件的掩码不重叠。</li>
+<li><strong><code>tmos_set_event</code> vs <code>tmos_start_task</code></strong>：前者立即触发（当前 tick），后者延迟触发。重入场景用后者。</li>
+<li><strong>消息必须释放</strong>：<code>tmos_msg_receive</code> 之后必须 <code>tmos_msg_deallocate</code>，否则内存泄漏。</li>
+<li><strong><code>TMOS_SystemProcess()</code> 驱动一切</strong>：它处理时钟更新、定时器到期、事件派发。如果长时间不调用，所有定时器都会延迟。</li>
+<li><strong>定时精度有限</strong>：TMOS 的 RTC 时钟精度取决于配置的时钟源（内部 LSI 约 32kHz，外部 LSE 32.768kHz），不适合微秒级精确定时。</li>
+</ol>
+<hr>
+<h2 id="与-hal-层的关系"><a class="header" href="#与-hal-层的关系">与 HAL 层的关系</a></h2>
+<p><code>HAL_Init()</code> 内部调用了 <code>TMOS_TimerInit()</code>，并注册了 HAL 任务。用户不需要手动初始化 TMOS 时钟，只需注册自己的任务即可。</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="sh1106-datasheet-extract"><a class="header" href="#sh1106-datasheet-extract">SH1106 Datasheet Extract</a></h1>
 <h1 id="sh1106-数据手册提取"><a class="header" href="#sh1106-数据手册提取">SH1106 数据手册提取</a></h1>
@@ -2746,6 +3521,274 @@ void SysTick_Handler()
 </div>
 <hr>
 <p><em>End of Extract / 提取完毕</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="nfc---st25dvxx"><a class="header" href="#nfc---st25dvxx">NFC - ST25DVXX</a></h1>
+<blockquote>
+<p>笔记: 在 ST25DVXX 中，存储器一个块是 4 字节</p>
+</blockquote>
+<p>ST25DVxxx提供了下列功能：</p>
+<ul>
+<li>快速传输模式（FTM）通过名为 Mailbox 的 256 字节缓冲区来实现RF和接触世界之间的快速链接。这 256 字节的信箱动态缓冲区可通过 RF 或 I2C 填充或清空</li>
+<li>GPO 引脚可指示接触端的传入事件，如 RF 场改变、正在进行的 RF 活动、RF 写入完成或信箱消息可用性</li>
+<li>当外部条件允许时，能量捕获元件可提供 µW 级的功率</li>
+<li>RF 管理允许 ST25DVxx 忽略 RF 请求</li>
+</ul>
+<p>在 I2C 中，除了密码以外，始终允许读取静态配置寄存器。对于专用寄存器，在事先成功输出 I2C 密码后，授予写访问权限。配置寄存器位于系统区中的 00h 到 0Fh</p>
+<p>ST25DVxx 存储器分为四个主要的存储区：</p>
+<ol>
+<li>
+<p><strong>用户存储器</strong></p>
+<ul>
+<li>可分为 4 个灵活的用户存储区，每个区域具有不同的访问权限，RF 和 I2C 读写指令仅在同一区域内合法
+<ul>
+<li>在 RF 中，如果地址跨越区域边界，则不执行多次读取或多次写入指令，并返回错误代码 0Fh</li>
+<li>在 I2C 中，当跨越区域边界时，读取数据时始终返回 FFh。如果指令跨越区域边界，则不会确认和执行写入指令</li>
+<li>用户存储区区域划分
+<ul>
+<li>区域结束块地址 ENDAi  定义</li>
+<li>起始块地址由前一个区域的末尾定义，所有区域都是连续的</li>
+<li>在对 ENDAi 寄存器编程时，必须遵守以下规则：<code>ENDAi-1 &lt; ENDAi ≤ ENDAi+1 = 用户存储器末尾</code>
+<ul>
+<li>建议对区域大小进行编程前，将区域 3 和 2 的末尾设为存储器的末尾，且先设置区域 3</li>
+</ul>
+</li>
+<li>配置系统存储器中有三个 ENDAi 寄存器
+<ul>
+<li>用于定义区域1、区域2、区域3的结束块地址</li>
+<li>区域 4 的末尾始终是最后一个存储器块，并且不可配置</li>
+</ul>
+</li>
+<li>出厂时所有 ENDAi 均被设为最大值，仅存在区域 1 并包括完整的用户存储器</li>
+<li>ENDAi 寄存器控制的存储空间单位是 8 个块
+<ul>
+<li>比如 ENDA1=0，那么区域 1 的大小就是 (0+1)*8*4= 32 字节</li>
+<li>比如 ENDA1=15，那么区域 1 的大小就是 (15+1)*8*4= 512 字节</li>
+</ul>
+</li>
+<li>区域 1 始终可读</li>
+<li>区域大小编程
+<ul>
+<li>要写入 ENDAi 寄存器，RF 用户必须先打开 RF 配置安全会话</li>
+<li>要写入 ENDAi 寄存器，I2C 主机必须先打开 I2C 安全会话</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>通过三个特定的 64 位密码之一，可实现每个区域的独立读和/或写保护</li>
+<li>可通过 RF 非接触接口和 I2C 有线接口访问</li>
+<li>通过RF接口
+<ul>
+<li>从地址 0 开始的 4 字节块对用户存储器进行寻址</li>
+<li>RF 扩展读写指令可用于对所有 ST25DVxx 内存块进行寻址</li>
+<li>其他读写指令只能对 FFh 个块地址进行寻址</li>
+</ul>
+</li>
+<li>通过 I2C 接口
+<ul>
+<li>从地址 0 开始的字节对用户存储器进行寻址</li>
+<li>设备选择必须设为 E2 = 0</li>
+<li>可连续读取用户存储器</li>
+<li>与RF接口不同，当请求地址达到存储器容量末尾时，不会发生翻转</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>动态寄存器</strong></p>
+<ul>
+<li>动态寄存器属于易失性寄存器，在POR后不会恢复到之前的值</li>
+<li>某些静态寄存器具有位于动态寄存器中的映像
+<ul>
+<li>动态寄存器值通过静态寄存器值进行初始化</li>
+<li>可以通过应用程序来更新，以暂时修改设备行为（如设置能量捕获复位）</li>
+<li>当静态寄存器中发生有效更改时，在 RF 或 I2C 中，相应的动态寄存器会自动更新</li>
+</ul>
+</li>
+<li>动态寄存器会自动更新，其中包含有关 ST25DV 活动的指示</li>
+<li>在 RF 中
+<ul>
+<li>可通过专用的 <code>(Fast) Read Dynamic Configuration</code> 和 <code>(Fast) Write Dynamic Configuration</code> 指令来访问动态寄存器，并将指针用作寄存器地址</li>
+<li>访问动态寄存器不需要密码</li>
+</ul>
+</li>
+<li>在 I2C 中
+<ul>
+<li>可通过 I2C 读写指令（设备选择为E2=0）访问动态寄存器</li>
+<li>可连续读取动态寄存器</li>
+<li>动态寄存器和快速传输模式信箱可连续读取，但不能连续写入</li>
+<li>访问动态寄存器不需要密码</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>快速传输模式缓冲区</strong></p>
+<ul>
+<li>快速传输模式使用该专用信箱缓冲区在 RF 和 I2C 世界之间传输消息</li>
+<li>该信箱最多包含 256 字节的数据，并从第一个字节填充</li>
+<li>在 RF 和 I2C 中，按字节访问快速传输模式信箱</li>
+<li>在 RF 中
+<ul>
+<li>通过专用的 <code>(Fast) Read Message</code> 指令读取信箱</li>
+<li>读取可从信箱中介于 00h 和 FFh 之间的任何地址开始</li>
+<li>通过 <code>(Fast) Write Message</code> 指令一次性写入信箱，始终从信箱地址 00h 开始写入</li>
+<li>从 RF 访问信箱不需要密码，但必须启用快速传输模式</li>
+</ul>
+</li>
+<li>在 I2C 中
+<ul>
+<li>可从 2008h 和 2107h 之间的任何地址值开始读取信箱</li>
+<li>写入信箱必须从 2008h 到 2107h 之间的地址开始</li>
+<li>从 I2C 访问信箱不需要密码，但必须启用快速传输模式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>系统配置区</strong></p>
+<ul>
+<li>包含用于配置所有 ST25DVxx 功能的寄存器
+<ul>
+<li>用户可对这些功能进行调整。其访问受 64 位配置密码保护</li>
+</ul>
+</li>
+<li>在 RF 通信中
+<ul>
+<li>可通过专用的读写指令访问位于系统配置区的静态寄存器，并将一个指针用作寄存器地址</li>
+<li>必须先提供有效的 RF 配置密码，以授予对系统配置寄存器的写入访问权限，这样才能打开RF配置安全会话</li>
+<li>也可以通过 I2C 主机禁用 RF 对系统配置区的写访问</li>
+</ul>
+</li>
+<li>在 I2C 通信中
+<ul>
+<li>可通过 I2C 读写指令（设备选择为E2=1）访问位于系统配置区的 I2C 静态寄存器</li>
+<li>可连续读取可读系统区域</li>
+<li>必须先提供有效的 I2C 密码，以授予对系统配置寄存器的写入访问权限，这样才能打开 I2C 安全会话</li>
+</ul>
+</li>
+<li>包括只读设备信息
+<ul>
+<li>IC 参考</li>
+<li>存储器容量</li>
+<li>IC 版本</li>
+<li>用于存储 64 位唯一标识符（UID）的 64 位块
+<ul>
+<li>该 UID 符合 ISO 15693 规定，其值用于防冲突序列（Inventory）</li>
+<li>UID值由 ST 在生产线上写入</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>AFI（默认为00h）
+<ul>
+<li>AFI寄存器存储应用系列标识符</li>
+</ul>
+</li>
+<li>DSFID（默认为00h）寄存器
+<ul>
+<li>DSFID寄存器存储用于防冲突算法的数据存储系列标识符</li>
+</ul>
+</li>
+<li>包括五个额外的 64 位块，用于存储
+<ul>
+<li>一个 I2C 密码</li>
+<li>三个 RF 用户区访问密码</li>
+<li>一个 RF 配置密码</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="密码和安全会话"><a class="header" href="#密码和安全会话">密码和安全会话</a></h2>
+<p>ST25DVxxx提供对用户存储器和系统配置静态寄存器的保护。RF用户和I 2C主机通过用密码</p>
+<p>打开完全会话可访问这些受保护数据。安全会话关闭时，访问权限受到更多限制，安全会话</p>
+<p>打开时，访问权限受到更少限制。</p>
+<p>动态寄存器和快速传输模式信箱不受任何安全会话保护。</p>
+<p>所有密码的长度均为64位，默认出厂密码值为0000000000000000h。</p>
+<p>I2C 模式中的专用密码指令包括：</p>
+<ul>
+<li>
+<p>I2C Write Password指令</p>
+</li>
+<li>
+<p>I2C Present Password指令</p>
+</li>
+</ul>
+<p>I2C 主机可能进行的安全会话操作包括：</p>
+<ul>
+<li>
+<p>打开 I2C 安全会话：I2C Present Password指令（使用有效的 I2C 密码）。</p>
+</li>
+<li>
+<p>写 I2C 密码：I2C Present Password指令（使用有效的 I2C 密码）。然后是 I2C Write Password 指令（使用新的 I2C 密码）。</p>
+</li>
+<li>
+<p>关闭 I2C 安全会话：I2C Present Password指令（使用错误的 I2C 密码）。或移除 VCC 电源（POR）标签。</p>
+</li>
+<li>
+<p>检查 I2C 安全会话是否打开：通过读取 I2C_SSO_Dyn 寄存器，I2C 主机可以读取 I2C 安全会话当前的状态（打开或关闭）。</p>
+</li>
+</ul>
+<p>用户存储器 RF 访问保护</p>
+<p>在 RF 模式中，ST25DVXX 的每个存储区均可以通过三个可用密码（RF密码1、2、或3）之一实现独立保护，并且每个区域也可以具有单独的读/写访问条件。</p>
+<p>对于每个区域，RFAiSS 寄存器用于：</p>
+<ul>
+<li>
+<p>选择解锁此区域的RF用户安全会话的RF密码</p>
+</li>
+<li>
+<p>选择此区域的读写操作保护</p>
+</li>
+</ul>
+<p>用户存储器I2C访问保护</p>
+<ul>
+<li>
+<p>在 I2C 模式中，每个区域也可以具有单独的读/写访问条件，但只用一个 I2C 密码解锁所有区域的 I2C 安全会话</p>
+</li>
+<li>
+<p>I2CSS 寄存器用于设置每个区域的读写操作保护</p>
+</li>
+<li>
+<p>更新 I2CSS 寄存器时，新的保护值在寄存器写入完成后立即生效</p>
+</li>
+</ul>
+<p><strong>系统存储器保护</strong></p>
+<p>默认情况下，在 RF 和 I2C 中对系统存储器（静态寄存器）进行写保护。</p>
+<p>I2C 主机必须打开 I2C 安全会话（通过提供有效的 I2C 密码），以启用对系统配置静态寄存器的写访问。</p>
+<p>I2C 主机没有对 RF 密码的读写访问权限。</p>
+<p>默认情况下，I2C 主机可以读取所有系统配置静态寄存器（RF 密码除外）</p>
+<p>在 RF 中，为了能对系统配置静态寄存器进行写访问，RF 用户必须打开 RF 配置安全会话（通过提供有效的 RF 密码 0），并且不得锁定系统配置（LOCK_CFG=00h）。</p>
+<p>RF 没有对 I2C 密码的读或写访问权限。</p>
+<p>默认情况下，RF用户可以读取所有系统配置静态寄存器（所有密码、LOCK_CCFILE、LOCK_DSFID和LOCK_AFI除外）。</p>
+<h2 id="i2c-访问"><a class="header" href="#i2c-访问">I2C 访问</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th style="text-align: center">b7</th><th style="text-align: center">b6</th><th style="text-align: center">b5</th><th style="text-align: center">b4</th><th style="text-align: center">b3</th><th style="text-align: center">b2</th><th style="text-align: center">b1</th><th style="text-align: center">b0</th></tr>
+</thead>
+<tbody>
+<tr><td style="text-align: center">1</td><td style="text-align: center">0</td><td style="text-align: center">1</td><td style="text-align: center">0</td><td style="text-align: center">E2</td><td style="text-align: center">1</td><td style="text-align: center">1</td><td style="text-align: center">R/W</td></tr>
+</tbody>
+</table>
+</div>
+<p>E2 = 0，ADDR = 0xA6，访问用户存储器、动态寄存器、信箱。</p>
+<p>E2 = 1，ADDR = 0xAE，访问系统区域。</p>
+<p>存储器中的每个数据字节都有一个 16 位（两字节宽）地址。先发送最高有效字节，接下来发送最低有效字节</p>
+<p>对于 EEPROM（用户存储器或系统配置）中的字节写入，内部编程在Ack之后开始，持续时间为 t_w</p>
+<p>对于写入快速传输模式缓冲区或动态寄存器，内部编程在 Ack 时完成</p>
+<p>如果禁止字节写入，则设备将回复NoAck。总线主设备通过产生停止条件终止传输，字节位置无改动</p>
+<p>如果字节符合以下条件之一，则禁止字节写入：</p>
+<p>• 字节位于用户存储器中，并通过LOCK_CCFILE寄存器进行写保护。</p>
+<p>• 字节位于用户存储器中，并通过I2CSS寄存器进行写保护，I 2C安全会话关闭。</p>
+<p>• 字节位于用户存储器中，已激活快速传输模式。</p>
+<p>• 字节位于系统存储器中，是一个只读寄存器。</p>
+<p>• 字节位于系统存储器中，I 2C安全会话已关闭。</p>
+<p>• 字节位于快速传输模式信箱中，并不是信箱的第一个字节。</p>
+<p>• 字节位于快速传输模式信箱中，信箱正忙。</p>
+<p>• 字节位于快速传输模式信箱中，未激活快速传输模式。</p>
+<p>• 字节位于动态寄存器区域中，是一个只读寄存器。</p>
 
                     </main>
 
