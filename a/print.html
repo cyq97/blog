@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-65583542.js";
+            window.path_to_searchindex_js = "searchindex-fa2161f2.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-639903a0.js"></script>
+        <script src="toc-557beef6.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -1060,6 +1060,1289 @@ void SysTick_Handler()
 <ol>
 <li>ThreadX 内核只使用了 PendSV 和 Sysctick 这两个内核中断</li>
 </ol>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ti-osal-api-操作系统抽象层-api"><a class="header" href="#ti-osal-api-操作系统抽象层-api">TI OSAL API (操作系统抽象层 API)</a></h1>
+<h2 id="版本历史-version-history"><a class="header" href="#版本历史-version-history">版本历史 (Version History)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Version (版本)</th><th>Description (描述)</th><th>Date (日期)</th></tr>
+</thead>
+<tbody>
+<tr><td>1.0</td><td>Initial ZigBee v1.0 release. (初始ZigBee v1.0发布。)</td><td>04/08/2005</td></tr>
+<tr><td>1.1</td><td>Added note on NV initialization to NV Memory API introduction. (在NV Memory API简介中增加了关于NV初始化的说明。)</td><td>07/22/2005</td></tr>
+<tr><td>1.2</td><td>Modified discussion of the Task Management API. (修改了任务管理API的讨论。)</td><td>08/25/2005</td></tr>
+<tr><td>1.3</td><td>Changed logo on title page, changed copyright on page footer. (更改了标题页的徽标，更改了页脚版权信息。)</td><td>02/27/2006</td></tr>
+<tr><td>1.4</td><td>Modified power management API. (修改了电源管理API。)</td><td>11/27/2006</td></tr>
+<tr><td>1.5</td><td>Deprecated osal_self() and osalTaskAdd() (废弃了osal_self()和osalTaskAdd())</td><td>12/18/2007</td></tr>
+<tr><td>1.6</td><td>Added OSAL_Clock functions. (添加了OSAL_Clock函数。)</td><td>02/21/2008</td></tr>
+<tr><td>1.7</td><td>Updated byte to uint8 and added Misc section. (将byte更新为uint8，并添加了Misc（杂项）章节。)</td><td>04/01/2009</td></tr>
+<tr><td>1.8</td><td>Updated NV item ID table and changed ZSUCCESS to SUCCESS. (更新了NV条目ID表，并将ZSUCCESS改为SUCCESS。)</td><td>04/09/2009</td></tr>
+<tr><td>1.9</td><td>Added a chapter for Simple NV memory system. (添加了简单NV存储系统章节。)</td><td>08/14/2009</td></tr>
+<tr><td>1.10</td><td>Added the osal_msg_find() and osal_start_reload_timer() API. (添加了osal_msg_find()和osal_start_reload_timer() API。)</td><td>11/09/2009</td></tr>
+<tr><td>1.11</td><td>Added osal_nv_delete(), osal_nv_len, osal_run_system(), osal_self() (添加了osal_nv_delete(), osal_nv_len, osal_run_system(), osal_self())</td><td>06/04/2011</td></tr>
+<tr><td>1.12</td><td>Updated osal_start_timerEx() (更新了osal_start_timerEx())</td><td>09/19/2011</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="1-introduction-简介"><a class="header" href="#1-introduction-简介">1. Introduction (简介)</a></h2>
+<h3 id="11-purpose-目的"><a class="header" href="#11-purpose-目的">1.1 Purpose (目的)</a></h3>
+<blockquote>
+<p>The purpose of this document is to define the OS Abstraction Layer (OSAL) API. This API allows the software components of a TI stack product, such as Z-Stack™, RemoTI™, and BLE, to be written independently of the specifics of the operating system, kernel or tasking environment (including control loops or connect-to-interrupt systems).</p>
+</blockquote>
+<p><strong>中文：</strong> 本文档的目的是定义操作系统抽象层 (OSAL) API。该API允许TI协议栈产品（如Z-Stack™、RemoTI™和BLE）的软件组件独立于操作系统、内核或任务环境（包括控制循环或连接中断系统）的具体细节进行编写。</p>
+<h3 id="12-scope-范围"><a class="header" href="#12-scope-范围">1.2 Scope (范围)</a></h3>
+<blockquote>
+<p>This document enumerates all the function calls provided by the OSAL. The function calls are specified in sufficient detail to allow a programmer to implement them.</p>
+</blockquote>
+<p><strong>中文：</strong> 本文档列举了OSAL提供的所有函数调用。这些函数调用的规格说明足够详细，以便程序员能够实现它们。</p>
+<h3 id="13-acronyms-缩略语"><a class="header" href="#13-acronyms-缩略语">1.3 Acronyms (缩略语)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Acronym (缩略语)</th><th>Full Name (全称)</th></tr>
+</thead>
+<tbody>
+<tr><td>API</td><td>Application Programming Interface (应用程序编程接口)</td></tr>
+<tr><td>BLE</td><td>Bluetooth Low Energy (低功耗蓝牙)</td></tr>
+<tr><td>NV</td><td>Non-Volatile (非易失性)</td></tr>
+<tr><td>OSAL</td><td>Operating System (OS) Abstraction Layer (操作系统抽象层)</td></tr>
+<tr><td>RF4CE</td><td>RF for Consumer Electronics (消费电子射频4CE)</td></tr>
+<tr><td>RemoTI</td><td>Texas Instruments RF4CE protocol stack (德州仪器RF4CE协议栈)</td></tr>
+<tr><td>Z-Stack</td><td>Texas Instruments ZigBee protocol stack (德州仪器ZigBee协议栈)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="2-api-overview-api概览"><a class="header" href="#2-api-overview-api概览">2. API Overview (API概览)</a></h2>
+<h3 id="21-overview-概览"><a class="header" href="#21-overview-概览">2.1 Overview (概览)</a></h3>
+<blockquote>
+<p>The OS abstraction layer is used to shield the TI stack software components from the specifics of the processing environment. It provides the following functionality in a manner that is independent of the processing environment.</p>
+<ol>
+<li>Task registration, initialization, starting</li>
+<li>Message exchange between tasks</li>
+<li>Task synchronization</li>
+<li>Interrupt handling</li>
+<li>Timers</li>
+<li>Memory allocation</li>
+</ol>
+</blockquote>
+<p><strong>中文：</strong> 操作系统抽象层用于将TI协议栈软件组件与处理环境的具体细节隔离开来。它以下述独立于处理环境的方式提供以下功能：</p>
+<ol>
+<li>任务注册、初始化、启动</li>
+<li>任务间消息交换</li>
+<li>任务同步</li>
+<li>中断处理</li>
+<li>定时器</li>
+<li>内存分配</li>
+</ol>
+<hr>
+<h2 id="3-message-management-api-消息管理api"><a class="header" href="#3-message-management-api-消息管理api">3. Message Management API (消息管理API)</a></h2>
+<h3 id="31-introduction-简介"><a class="header" href="#31-introduction-简介">3.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>The message management API provides a mechanism for exchanging messages between tasks or processing elements with distinct processing environments (for example, interrupt service routines or functions called within a control loop). The functions in this API enable a task to allocate and de-allocate message buffers, send command messages to another task and receive reply messages.</p>
+</blockquote>
+<p><strong>中文：</strong> 消息管理API提供了一种机制，用于在任务或具有不同处理环境的处理元素（例如，中断服务例程或在控制循环中调用的函数）之间交换消息。该API中的函数允许任务分配和释放消息缓冲区、向另一个任务发送命令消息以及接收回复消息。</p>
+<h3 id="32-osal_msg_allocate-"><a class="header" href="#32-osal_msg_allocate-">3.2 osal_msg_allocate( )</a></h3>
+<h4 id="321-description-描述"><a class="header" href="#321-description-描述">3.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called by a task to allocate a message buffer, the task/function will then fill in the message and call <code>osal_msg_send()</code> to send the message to another task. If the buffer cannot be allocated, <code>msg_ptr</code> will be set to NULL.
+<strong>NOTE:</strong> Do not confuse this function with <code>osal_mem_alloc()</code>, this function is used to allocate a buffer to send messages between tasks [using <code>osal_msg_send()</code>]. Use <code>osal_mem_alloc()</code> to allocate blocks of memory.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数由任务调用以分配消息缓冲区，然后任务/函数将填充消息并调用 <code>osal_msg_send()</code> 将消息发送给另一个任务。如果无法分配缓冲区，<code>msg_ptr</code> 将被设置为 NULL。<br><strong>注意：</strong> 请勿将此函数与 <code>osal_mem_alloc()</code> 混淆，此函数用于分配缓冲区以便在任务之间发送消息 [使用 <code>osal_msg_send()</code>]。使用 <code>osal_mem_alloc()</code> 来分配内存块。</p>
+<h4 id="322-prototype-原型"><a class="header" href="#322-prototype-原型">3.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 *osal_msg_allocate( uint16 len )
+</code></pre>
+<h4 id="323-parameter-details-参数详情"><a class="header" href="#323-parameter-details-参数详情">3.2.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>len</code> : the length of the message. (消息的长度。)</li>
+</ul>
+<h4 id="324-return-返回值"><a class="header" href="#324-return-返回值">3.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>The return value is a pointer to the buffer allocated for the message. A NULL return indicates the message allocation operation failed.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值是指向为消息分配的缓冲区的指针。返回 NULL 表示消息分配操作失败。</p>
+<hr>
+<h3 id="33-osal_msg_deallocate-"><a class="header" href="#33-osal_msg_deallocate-">3.3 osal_msg_deallocate( )</a></h3>
+<h4 id="331-description-描述"><a class="header" href="#331-description-描述">3.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is used to de-allocate a message buffer. This function is called by a task (or processing element) after it has finished processing a received message.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数用于释放消息缓冲区。任务（或处理元素）在处理完接收到的消息后调用此函数。</p>
+<h4 id="332-prototype-原型"><a class="header" href="#332-prototype-原型">3.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_msg_deallocate( uint8 *msg_ptr )
+</code></pre>
+<h4 id="333-parameter-details-参数详情"><a class="header" href="#333-parameter-details-参数详情">3.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>msg_ptr</code> : a pointer to the message buffer that needs to be de-allocated. (指向需要释放的消息缓冲区的指针。)</li>
+</ul>
+<h4 id="334-return-返回值"><a class="header" href="#334-return-返回值">3.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>De-allocation Successful (释放成功)</td></tr>
+<tr><td>INVALID_MSG_POINTER</td><td>Invalid message pointer (无效的消息指针)</td></tr>
+<tr><td>MSG_BUFFER_NOT_AVAIL</td><td>Buffer is queued (缓冲区被排队)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="34-osal_msg_send-"><a class="header" href="#34-osal_msg_send-">3.4 osal_msg_send( )</a></h3>
+<h4 id="341-description-描述"><a class="header" href="#341-description-描述">3.4.1 Description (描述)</a></h4>
+<blockquote>
+<p>The <code>osal_msg_send</code> function is called by a task to send a command or data message to another task or processing element. The <code>destination_task</code> identifier field must refer to a valid system task. The <code>osal_msg_send()</code> function will also set the <code>SYS_EVENT_MSG</code> event in the destination tasks event list.</p>
+</blockquote>
+<p><strong>中文：</strong> <code>osal_msg_send</code> 函数由任务调用，用于向另一个任务或处理元素发送命令或数据消息。<code>destination_task</code> 标识符字段必须引用一个有效的系统任务。<code>osal_msg_send()</code> 函数还将在目标任务的事件列表中设置 <code>SYS_EVENT_MSG</code> 事件。</p>
+<h4 id="342-prototype-原型"><a class="header" href="#342-prototype-原型">3.4.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_msg_send(uint8 destination_task, uint8 *msg_ptr )
+</code></pre>
+<h4 id="343-parameter-details-参数详情"><a class="header" href="#343-parameter-details-参数详情">3.4.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>destination_task</code> : the ID of the task to receive the message. (接收消息的任务的ID。)</li>
+<li><code>msg_ptr</code> : a pointer to the buffer containing the message. <code>msg_ptr</code> must be a pointer to a valid message buffer allocated via <code>osal_msg_allocate()</code>. (指向包含消息的缓冲区的指针。<code>msg_ptr</code> 必须是通过 <code>osal_msg_allocate()</code> 分配的有效消息缓冲区的指针。)</li>
+</ul>
+<h4 id="344-return-返回值"><a class="header" href="#344-return-返回值">3.4.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value is a 1-byte field indicating the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值是一个1字节字段，指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Message sent successfully (消息发送成功)</td></tr>
+<tr><td>INVALID_MSG_POINTER</td><td>Invalid Message Pointer (无效的消息指针)</td></tr>
+<tr><td>INVALID_TASK</td><td>Destination_task is not valid (目标_task无效)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="35-osal_msg_receive-"><a class="header" href="#35-osal_msg_receive-">3.5 osal_msg_receive( )</a></h3>
+<h4 id="351-description-描述"><a class="header" href="#351-description-描述">3.5.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called by a task to retrieve a received command message. The calling task must de-allocate the message buffer after processing the message using the <code>osal_msg_deallocate()</code> call.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数由任务调用以检索收到的命令消息。调用任务在处理完消息后必须使用 <code>osal_msg_deallocate()</code> 调用来释放消息缓冲区。</p>
+<h4 id="352-prototype-原型"><a class="header" href="#352-prototype-原型">3.5.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 *osal_msg_receive(uint8 task_id )
+</code></pre>
+<h4 id="353-parameter-details-参数详情"><a class="header" href="#353-parameter-details-参数详情">3.5.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>task_id</code> : the identifier of the calling task (to which the message was destined). (调用任务的标识符（消息的目的地）。)</li>
+</ul>
+<h4 id="354-return-返回值"><a class="header" href="#354-return-返回值">3.5.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value is a pointer to a buffer containing the message or NULL if there is no received message.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值是指向包含消息的缓冲区的指针，如果没有接收到的消息则为 NULL。</p>
+<hr>
+<h3 id="36-osal_msg_find-"><a class="header" href="#36-osal_msg_find-">3.6 osal_msg_find( )</a></h3>
+<h4 id="361-description-描述"><a class="header" href="#361-description-描述">3.6.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function searches for an existing OSAL message matching the <code>task_id</code> and event parameters.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数搜索与 <code>task_id</code> 和事件参数匹配的现有 OSAL 消息。</p>
+<h4 id="362-prototype-原型"><a class="header" href="#362-prototype-原型">3.6.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">osal_event_hdr_t *osal_msg_find(uint8 task_id, uint8 event)
+</code></pre>
+<h4 id="363-parameter-details-参数详情"><a class="header" href="#363-parameter-details-参数详情">3.6.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>task_id</code> : the identifier that the enqueued OSAL message must match. (已排队的 OSAL 消息必须匹配的标识符。)</li>
+<li><code>event</code> : the OSAL event id that the enqueued OSAL message must match. (已排队的 OSAL 消息必须匹配的 OSAL 事件 ID。)</li>
+</ul>
+<h4 id="364-return-返回值"><a class="header" href="#364-return-返回值">3.6.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value is a pointer to the matching OSAL message on success or NULL on failure.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值是指向匹配的 OSAL 消息的指针（成功时），或 NULL（失败时）。</p>
+<hr>
+<h2 id="4-task-synchronization-api-任务同步api"><a class="header" href="#4-task-synchronization-api-任务同步api">4. Task Synchronization API (任务同步API)</a></h2>
+<h3 id="41-introduction-简介"><a class="header" href="#41-introduction-简介">4.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This API enables a task to wait for events to happen and return control while waiting. The functions in this API can be used to set events for a task and notify the task once any event is set.</p>
+</blockquote>
+<p><strong>中文：</strong> 此 API 允许任务等待事件发生，并在等待时返回控制权。该 API 中的函数可用于为任务设置事件，并在任何事件被设置后通知任务。</p>
+<h3 id="42-osal_set_event-"><a class="header" href="#42-osal_set_event-">4.2 osal_set_event( )</a></h3>
+<h4 id="421-description-描述"><a class="header" href="#421-description-描述">4.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called to set the event flags for a task.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数为任务设置事件标志。</p>
+<h4 id="422-prototype-原型"><a class="header" href="#422-prototype-原型">4.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_set_event(uint8 task_id, uint16 event_flag )
+</code></pre>
+<h4 id="423-parameter-details-参数详情"><a class="header" href="#423-parameter-details-参数详情">4.2.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>task_id</code> : the identifier of the task for which the event is to be set. (要为其设置事件的任务的标识符。)</li>
+<li><code>event_flag</code> : a 2-byte bitmap with each bit specifying an event. There is only one system event (<code>SYS_EVENT_MSG</code>), the rest of the events/bits are defined by the receiving task. (一个2字节的位图，每一位指定一个事件。只有一个系统事件 (<code>SYS_EVENT_MSG</code>)，其余的事件/位由接收任务定义。)</li>
+</ul>
+<h4 id="424-return-返回值"><a class="header" href="#424-return-返回值">4.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>INVALID_TASK</td><td>Invalid Task (无效的任务)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="5-timer-management-api-定时器管理api"><a class="header" href="#5-timer-management-api-定时器管理api">5. Timer Management API (定时器管理API)</a></h2>
+<h3 id="51-introduction-简介"><a class="header" href="#51-introduction-简介">5.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This API enables the use of timers by internal (TI stack) tasks as well as external (Application level) tasks. The API provides functions to start and stop a timer. The timers can be set in increments of 1 millisecond.</p>
+</blockquote>
+<p><strong>中文：</strong> 此 API 允许内部（TI 协议栈）任务以及外部（应用层）任务使用定时器。该 API 提供启动和停止定时器的函数。定时器可以以1毫秒为增量进行设置。</p>
+<h3 id="52-osal_start_timerex-"><a class="header" href="#52-osal_start_timerex-">5.2 osal_start_timerEx( )</a></h3>
+<h4 id="521-description-描述"><a class="header" href="#521-description-描述">5.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called to start a timer. When the timer expires, the given event bit will be set. The event will be set for the task specified by <code>taskID</code>. This timer is a one shot timer, meaning that when the timer expires it isn’t reloaded.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以启动定时器。当定时器到期时，给定的event位将被设置。该事件将为 <code>taskID</code> 指定的任务设置。此定时器是单次定时器，意味着当定时器到期时，它不会重新加载。</p>
+<h4 id="522-prototype-原型"><a class="header" href="#522-prototype-原型">5.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_start_timerEx( uint8 taskID, uint16 event_id,
+                          uint32 timeout_value );
+</code></pre>
+<h4 id="523-parameter-details-参数详情"><a class="header" href="#523-parameter-details-参数详情">5.2.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>taskID</code> : the task ID of the task that is to get the event when the timer expires. (定时器到期时将获得事件的任务的 ID。)</li>
+<li><code>event_id</code> : a user defined event bit. When the timer expires, the calling task will be notified (event). (用户定义的事件位。当定时器到期时，调用任务将被通知（事件）。)</li>
+<li><code>timeout_value</code> : the amount of time (in milliseconds) before the timer event is set. (定时器事件被设置之前的时间量（以毫秒为单位）。)</li>
+</ul>
+<h4 id="524-return-返回值"><a class="header" href="#524-return-返回值">5.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Timer Start Successful (定时器启动成功)</td></tr>
+<tr><td>NO_TIMER_AVAILABLE</td><td>Unable to start the timer (无法启动定时器)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="53-osal_start_reload_timer-"><a class="header" href="#53-osal_start_reload_timer-">5.3 osal_start_reload_timer( )</a></h3>
+<h4 id="531-description-描述"><a class="header" href="#531-description-描述">5.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>Call this function to start a timer that, when it expires, will set an event bit and reload the timeout value automatically. The event will be set for the task specified by <code>taskID</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以启动一个定时器，当它到期时，将设置一个event位并自动重新加载超时值。该事件将为 <code>taskID</code> 指定的任务设置。</p>
+<h4 id="532-prototype-原型"><a class="header" href="#532-prototype-原型">5.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_start_reload_timer( uint8 taskID, uint16 event_id,
+                               uint32 timeout_value );
+</code></pre>
+<h4 id="533-parameter-details-参数详情"><a class="header" href="#533-parameter-details-参数详情">5.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>taskID</code> : the task ID of the task that is to get the event when the timer expires. (定时器到期时将获得事件的任务的 ID。)</li>
+<li><code>event_id</code> : a user defined event bit. When the timer expires, the calling task will be notified (event). (用户定义的事件位。当定时器到期时，调用任务将被通知（事件）。)</li>
+<li><code>timeout_value</code> : the amount of time (in milliseconds) before the timer event is set. This value is reloaded into the timer when the timer expires. (定时器事件设置前的时间量（毫秒）。当定时器到期时，此值会重新加载到定时器中。)</li>
+</ul>
+<h4 id="534-return-返回值"><a class="header" href="#534-return-返回值">5.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Timer Start Successful (定时器启动成功)</td></tr>
+<tr><td>NO_TIMER_AVAILABLE</td><td>Unable to start the timer (无法启动定时器)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="54-osal_stop_timerex-"><a class="header" href="#54-osal_stop_timerex-">5.4 osal_stop_timerEx( )</a></h3>
+<h4 id="541-description-描述"><a class="header" href="#541-description-描述">5.4.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called to stop a timer that has already been started. If successful, the function will cancel the timer and prevent the event associated with the timer.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以停止已启动的定时器。如果成功，该函数将取消定时器并阻止与该定时器关联的事件。</p>
+<h4 id="542-prototype-原型"><a class="header" href="#542-prototype-原型">5.4.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_stop_timerEx( uint8 task_id, uint16 event_id );
+</code></pre>
+<h4 id="543-parameter-details-参数详情"><a class="header" href="#543-parameter-details-参数详情">5.4.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>task_id</code> : the task for which to stop the timer. (要为其停止定时器的任务。)</li>
+<li><code>event_id</code> : the identifier of the timer that is to be stopped. (要停止的定时器的标识符。)</li>
+</ul>
+<h4 id="544-return-返回值"><a class="header" href="#544-return-返回值">5.4.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Timer Stopped Successfully (定时器停止成功)</td></tr>
+<tr><td>INVALID_EVENT_ID</td><td>Invalid Event (无效的事件)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="55-osal_getsystemclock-"><a class="header" href="#55-osal_getsystemclock-">5.5 osal_GetSystemClock( )</a></h3>
+<h4 id="551-description-描述"><a class="header" href="#551-description-描述">5.5.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called to read the system clock.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以读取系统时钟。</p>
+<h4 id="552-prototype-原型"><a class="header" href="#552-prototype-原型">5.5.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint32 osal_GetSystemClock( void );
+</code></pre>
+<h4 id="553-parameter-details-参数详情"><a class="header" href="#553-parameter-details-参数详情">5.5.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="554-return-返回值"><a class="header" href="#554-return-返回值">5.5.4 Return (返回值)</a></h4>
+<blockquote>
+<p>The system clock in milliseconds.</p>
+</blockquote>
+<p><strong>中文：</strong> 以毫秒为单位的系统时钟。</p>
+<hr>
+<h2 id="6-interrupt-management-api-中断管理api"><a class="header" href="#6-interrupt-management-api-中断管理api">6. Interrupt Management API (中断管理API)</a></h2>
+<h3 id="61-introduction-简介"><a class="header" href="#61-introduction-简介">6.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This API enables a task to interface with external interrupts. The functions in the API allow a task to associate a specific service routine with each interrupt. The interrupts can be enabled or disabled. Inside the service routine, events may be set for other tasks.</p>
+</blockquote>
+<p><strong>中文：</strong> 此 API 允许任务与外部中断进行接口。该 API 中的函数允许任务为每个中断关联一个特定的服务例程。中断可以被使能或禁止。在服务例程内部，可以为其他任务设置事件。</p>
+<h3 id="62-osal_int_enable-"><a class="header" href="#62-osal_int_enable-">6.2 osal_int_enable( )</a></h3>
+<h4 id="621-description-描述"><a class="header" href="#621-description-描述">6.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called to enable an interrupt. Once enabled, occurrence of the interrupt causes the service routine associated with that interrupt to be called.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以使能一个中断。一旦使能，发生中断时将调用与该中断关联的服务例程。</p>
+<h4 id="622-prototype-原型"><a class="header" href="#622-prototype-原型">6.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_int_enable( uint8 interrupt_id )
+</code></pre>
+<h4 id="623-parameter-details-参数详情"><a class="header" href="#623-parameter-details-参数详情">6.2.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>interrupt_id</code> : identifies the interrupt to be enabled. (标识要使能的中断。)</li>
+</ul>
+<h4 id="624-return-返回值"><a class="header" href="#624-return-返回值">6.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Interrupt Enabled Successfully (中断使能成功)</td></tr>
+<tr><td>INVALID_INTERRUPT_ID</td><td>Invalid Interrupt (无效的中断)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="63-osal_int_disable-"><a class="header" href="#63-osal_int_disable-">6.3 osal_int_disable( )</a></h3>
+<h4 id="631-description-描述"><a class="header" href="#631-description-描述">6.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called to disable an interrupt. When a disabled interrupt occurs, the service routine associated with that interrupt is not called.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以禁止一个中断。当一个被禁止的中断发生时，不会调用与该中断关联的服务例程。</p>
+<h4 id="632-prototype-原型"><a class="header" href="#632-prototype-原型">6.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_int_disable( uint8 interrupt_id )
+</code></pre>
+<h4 id="633-parameter-details-参数详情"><a class="header" href="#633-parameter-details-参数详情">6.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>interrupt_id</code> : identifies the interrupt to be disabled. (标识要禁止的中断。)</li>
+</ul>
+<h4 id="634-return-返回值"><a class="header" href="#634-return-返回值">6.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Interrupt Disabled Successfully (中断禁止成功)</td></tr>
+<tr><td>INVALID_INTERRUPT_ID</td><td>Invalid Interrupt (无效的中断)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="7-task-management-api-任务管理api"><a class="header" href="#7-task-management-api-任务管理api">7. Task Management API (任务管理API)</a></h2>
+<h3 id="71-introduction-简介"><a class="header" href="#71-introduction-简介">7.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This API is used to add and manage tasks in the OSAL system. Each task is made up of an initialization function and an event processing function. OSAL calls <code>osalInitTasks()</code> [application supplied] to initialize the tasks and OSAL uses a task table (<code>const pTaskEventHandlerFn tasksArr[]</code>) to call the event processor for each task (also application supplied).</p>
+</blockquote>
+<p><strong>中文：</strong> 此 API 用于在 OSAL 系统中添加和管理任务。每个任务由一个初始化函数和一个事件处理函数组成。OSAL 调用 <code>osalInitTasks()</code> [由应用程序提供] 来初始化任务，并使用任务表 (<code>const pTaskEventHandlerFn tasksArr[]</code>) 来调用每个任务的事件处理器（也由应用程序提供）。</p>
+<blockquote>
+<p>Example of a task table implementation: (任务表示例实现：)</p>
+</blockquote>
+<pre><code class="language-c">const pTaskEventHandlerFn tasksArr[] =
+{
+    macEventLoop,
+    nwk_event_loop,
+    Hal_ProcessEvent,
+    MT_ProcessEvent,
+    APS_event_loop,
+    ZDApp_event_loop,
+};
+const uint8 tasksCnt = sizeof( tasksArr ) / sizeof( tasksArr[0] );
+</code></pre>
+<blockquote>
+<p>Example of an <code>osalInitTasks()</code> implementation: (<code>osalInitTasks()</code> 实现示例：)</p>
+</blockquote>
+<pre><code class="language-c">void osalInitTasks( void )
+{
+    uint8 taskID = 0;
+    tasksEvents = (uint16 *)osal_mem_alloc( sizeof( uint16 ) * tasksCnt);
+    osal_memset( tasksEvents, 0, (sizeof( uint16 ) * tasksCnt));
+    macTaskInit( taskID++ );
+    nwk_init( taskID++ );
+    Hal_Init( taskID++ );
+    MT_TaskInit( taskID++ );
+    APS_Init( taskID++ );
+    ZDApp_Init( taskID++ );
+}
+</code></pre>
+<h3 id="72-osal_init_system-"><a class="header" href="#72-osal_init_system-">7.2 osal_init_system( )</a></h3>
+<h4 id="721-description-描述"><a class="header" href="#721-description-描述">7.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function initializes the OSAL system. The function must be called at startup prior to using any other OSAL function.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数初始化 OSAL 系统。在使用任何其他 OSAL 函数之前，必须在启动时调用此函数。</p>
+<h4 id="722-prototype-原型"><a class="header" href="#722-prototype-原型">7.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_init_system( void )
+</code></pre>
+<h4 id="723-parameter-details-参数详情"><a class="header" href="#723-parameter-details-参数详情">7.2.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="724-return-返回值"><a class="header" href="#724-return-返回值">7.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="73-osal_start_system-"><a class="header" href="#73-osal_start_system-">7.3 osal_start_system( )</a></h3>
+<h4 id="731-description-描述"><a class="header" href="#731-description-描述">7.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is the main loop function of the task system, repeatedly calling <code>osal_run_system()</code>, from an infinite loop. This function never returns. When using a different scheduler, it should call <code>osal_run_system()</code> directly and not use this function.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数是任务系统的主循环函数，从一个无限循环中反复调用 <code>osal_run_system()</code>。此函数永不返回。当使用不同的调度器时，应直接调用 <code>osal_run_system()</code> 而不使用此函数。</p>
+<h4 id="732-prototype-原型"><a class="header" href="#732-prototype-原型">7.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_start_system( void )
+</code></pre>
+<h4 id="733-parameter-details-参数详情"><a class="header" href="#733-parameter-details-参数详情">7.3.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="734-return-返回值"><a class="header" href="#734-return-返回值">7.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h3 id="74-osal_run_system-"><a class="header" href="#74-osal_run_system-">7.4 osal_run_system( )</a></h3>
+<h4 id="741-description-描述"><a class="header" href="#741-description-描述">7.4.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function will make one pass through the OSAL taskEvents table and call the task_event_processor function for the first task that is found with at least one event pending. After an event is serviced, any remaining events will be returned back to the main loop for next time around. If there are no pending events (for all tasks), this function puts the processor into a Sleep mode.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数将遍历一次 OSAL 的 taskEvents 表，并为找到的第一个至少有一个待处理事件的任务调用 task_event_processor 函数。在事件被服务后，任何剩余的事件将返回给主循环以供下次处理。如果没有待处理事件（针对所有任务），此函数将使处理器进入睡眠模式。</p>
+<h4 id="742-prototype-原型"><a class="header" href="#742-prototype-原型">7.4.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_run_system( void )
+</code></pre>
+<h4 id="743-parameter-details-参数详情"><a class="header" href="#743-parameter-details-参数详情">7.4.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="744-return-返回值"><a class="header" href="#744-return-返回值">7.4.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h3 id="75-osal_self-"><a class="header" href="#75-osal_self-">7.5 osal_self( )</a></h3>
+<h4 id="751-description-描述"><a class="header" href="#751-description-描述">7.5.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function returns the task ID of the currently active OSAL task, corresponding to the index of the task in the OSAL task table. This function can be used by an application to determine the OSAL task ID that it is running under. If called when no OSAL task is active, this function returns the value <code>TASK_NO_TASK</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数返回当前活动 OSAL 任务的 ID，对应于该任务在 OSAL 任务表中的索引。应用程序可以使用此函数来确定其运行时所处的 OSAL 任务 ID。如果调用时没有活动的 OSAL 任务，此函数将返回值 <code>TASK_NO_TASK</code>。</p>
+<h4 id="752-prototype-原型"><a class="header" href="#752-prototype-原型">7.5.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_self( void )
+</code></pre>
+<h4 id="753-parameter-details-参数详情"><a class="header" href="#753-parameter-details-参数详情">7.5.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="754-return-返回值"><a class="header" href="#754-return-返回值">7.5.4 Return (返回值)</a></h4>
+<blockquote>
+<p>OSAL task ID of the currently active task.</p>
+</blockquote>
+<p><strong>中文：</strong> 当前活动任务的 OSAL 任务 ID。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>0x00 – 0xFE</td><td>ID of active OSAL task (活动 OSAL 任务的 ID)</td></tr>
+<tr><td>0xFF (TASK_NO_TASK)</td><td>No OSAL task is active (没有活动的 OSAL 任务)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="8-memory-management-api-内存管理api"><a class="header" href="#8-memory-management-api-内存管理api">8. Memory Management API (内存管理API)</a></h2>
+<h3 id="81-introduction-简介"><a class="header" href="#81-introduction-简介">8.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This API represents a simple memory allocation system. These functions allow dynamic memory allocation.</p>
+</blockquote>
+<p><strong>中文：</strong> 此 API 代表一个简单的内存分配系统。这些函数允许动态内存分配。</p>
+<h3 id="82-osal_mem_alloc-"><a class="header" href="#82-osal_mem_alloc-">8.2 osal_mem_alloc( )</a></h3>
+<h4 id="821-description-描述"><a class="header" href="#821-description-描述">8.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is a simple memory allocation function that returns a pointer to a buffer (if successful).</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数是一个简单的内存分配函数，如果成功则返回指向缓冲区的指针。</p>
+<h4 id="822-prototype-原型"><a class="header" href="#822-prototype-原型">8.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void *osal_mem_alloc( uint16 size );
+</code></pre>
+<h4 id="823-parameter-details-参数详情"><a class="header" href="#823-parameter-details-参数详情">8.2.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>size</code> : the number of bytes wanted in the buffer. (缓冲区中需要的字节数。)</li>
+</ul>
+<h4 id="824-return-返回值"><a class="header" href="#824-return-返回值">8.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>A void pointer (which should be cast to the intended buffer type) to the newly allocated buffer. A NULL pointer is returned if there is not enough memory to allocate.</p>
+</blockquote>
+<p><strong>中文：</strong> 一个指向新分配缓冲区的空指针（应转换为预期的缓冲区类型）。如果没有足够的内存分配，则返回 NULL 指针。</p>
+<hr>
+<h3 id="83-osal_mem_free-"><a class="header" href="#83-osal_mem_free-">8.3 osal_mem_free( )</a></h3>
+<h4 id="831-description-描述"><a class="header" href="#831-description-描述">8.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function frees the allocated memory to be used again. This only works if the memory had already been allocated with <code>osal_mem_alloc()</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数释放已分配的内存以供再次使用。这仅在内存已使用 <code>osal_mem_alloc()</code> 分配时才有效。</p>
+<h4 id="832-prototype-原型"><a class="header" href="#832-prototype-原型">8.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_mem_free( void *ptr );
+</code></pre>
+<h4 id="833-parameter-details-参数详情"><a class="header" href="#833-parameter-details-参数详情">8.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>ptr</code> : pointer to the buffer to be “freed”. Buffer must have been previously allocated with <code>osal_mem_alloc()</code>. (指向要“释放”的缓冲区的指针。缓冲区必须先前已使用 <code>osal_mem_alloc()</code> 分配。)</li>
+</ul>
+<h4 id="834-return-返回值"><a class="header" href="#834-return-返回值">8.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h2 id="9-power-management-api-电源管理api"><a class="header" href="#9-power-management-api-电源管理api">9. Power Management API (电源管理API)</a></h2>
+<h3 id="91-introduction-简介"><a class="header" href="#91-introduction-简介">9.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This section describes the OSAL power management system. The system provides a way for the applications/tasks to notify OSAL when it is safe to turn off the receiver and external hardware, and put the processor in to sleep.
+There are two functions to control the power management. The first, <code>osal_pwrmgr_device()</code>, is called to set the device level mode (power save or no power savings). Then, there is the task power state, each task can hold off the power manager from conserving power by calling <code>osal_pwrmgr_task_state( PWRMGR_HOLD )</code>. If a task “Holds” the power manager, it will need to call <code>osal_pwrmgr_task_state( PWRMGR_CONSERVE )</code> to allow the power manager to continue in power conserve mode.
+By default, when the task is initialized, each task’s power state is set to <code>PWRMGR_CONSERVE</code>, so if a task does not want to hold off power conservation (no change) it doesn’t need to call <code>osal_pwrmgr_task_state()</code>.
+In addition, by default, a battery-operated device will be in <code>PWRMGR_ALWAYS_ON</code> state until it joins the network, then it will change its state to <code>PWRMGR_BATTERY</code>. This means that if the device cannot find a device to join it will not enter a power save state. If you want to change this behavior, add <code>osal_pwrmgr_device( PWRMGR_BATTERY )</code> in your application’s task initialization function or when your application stops/pauses the joining process.
+The power manager will look at the device mode and the collective power state of all the tasks before going in to power conserve state.</p>
+</blockquote>
+<p><strong>中文：</strong> 本节描述 OSAL 电源管理系统。该系统为应用程序/任务提供了一种方式，以便在可以安全关闭接收器和外部硬件并使处理器进入睡眠状态时通知 OSAL。
+有两个函数用于控制电源管理。第一个是 <code>osal_pwrmgr_device()</code>，用于设置设备级模式（省电或无省电）。然后是任务电源状态，每个任务可以通过调用 <code>osal_pwrmgr_task_state( PWRMGR_HOLD )</code> 来阻止电源管理器省电。如果任务“保持”了电源管理器，它将需要调用 <code>osal_pwrmgr_task_state( PWRMGR_CONSERVE )</code> 以允许电源管理器继续省电模式。
+默认情况下，当任务初始化时，每个任务的电源状态都设置为 <code>PWRMGR_CONSERVE</code>，因此如果任务不想阻止省电（无更改），则无需调用 <code>osal_pwrmgr_task_state()</code>。
+此外，默认情况下，电池供电的设备在加入网络之前将处于 <code>PWRMGR_ALWAYS_ON</code> 状态，然后将其状态更改为 <code>PWRMGR_BATTERY</code>。这意味着如果设备找不到要加入的设备，它将不会进入省电状态。如果您想更改此行为，请在应用程序的任务初始化函数中或当应用程序停止/暂停加入过程时添加 <code>osal_pwrmgr_device( PWRMGR_BATTERY )</code>。
+在进入省电状态之前，电源管理器将查看设备模式和所有任务的集体电源状态。</p>
+<h3 id="92-osal_pwrmgr_init-"><a class="header" href="#92-osal_pwrmgr_init-">9.2 osal_pwrmgr_init( )</a></h3>
+<h4 id="921-description-描述"><a class="header" href="#921-description-描述">9.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function will initialize variables used by the power management system. <strong>IMPORTANT:</strong> Do not call this function, it is already called by <code>osal_init_system()</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数将初始化电源管理系统使用的变量。<strong>重要：</strong> 不要调用此函数，它已由 <code>osal_init_system()</code> 调用。</p>
+<h4 id="922-prototype-原型"><a class="header" href="#922-prototype-原型">9.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_pwrmgr_init( void );
+</code></pre>
+<h4 id="923-parameter-details-参数详情"><a class="header" href="#923-parameter-details-参数详情">9.2.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="924-return-返回值"><a class="header" href="#924-return-返回值">9.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h3 id="93-osal_pwrmgr_powerconserve-"><a class="header" href="#93-osal_pwrmgr_powerconserve-">9.3 osal_pwrmgr_powerconserve( )</a></h3>
+<h4 id="931-description-描述"><a class="header" href="#931-description-描述">9.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called to go into power down mode. <strong>IMPORTANT:</strong> Do not call this function, it is already called in the OSAL main loop [<code>osal_start_system()</code>].</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以进入掉电模式。<strong>重要：</strong> 不要调用此函数，它已在 OSAL 主循环 [<code>osal_start_system()</code>] 中被调用。</p>
+<h4 id="932-prototype-原型"><a class="header" href="#932-prototype-原型">9.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_pwrmgr_powerconserve( void );
+</code></pre>
+<h4 id="933-parameter-details-参数详情"><a class="header" href="#933-parameter-details-参数详情">9.3.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="934-return-返回值"><a class="header" href="#934-return-返回值">9.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中：</strong> 无。</p>
+<hr>
+<h3 id="94-osal_pwrmgr_device-"><a class="header" href="#94-osal_pwrmgr_device-">9.4 osal_pwrmgr_device( )</a></h3>
+<h4 id="941-description-描述"><a class="header" href="#941-description-描述">9.4.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called on power-up or whenever the power requirements change (ex. Battery backed coordinator). This function sets the overall ON/OFF State of the device’s power manager. This function should be called from a central controlling entity (like ZDO).</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数在上电时或电源需求发生变化时（例如，电池供电的协调器）调用。此函数设置设备电源管理器的总体开/关状态。此函数应由中央控制实体（如 ZDO）调用。</p>
+<h4 id="942-prototype-原型"><a class="header" href="#942-prototype-原型">9.4.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_pwrmgr_device( uint8 pwrmgr_device );
+</code></pre>
+<h4 id="943-parameter-details-参数详情"><a class="header" href="#943-parameter-details-参数详情">9.4.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>Pwrmgr_device</code> : changes or sets the power savings mode. (更改或设置省电模式。)</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Type (类型)</th><th>Description (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>PWRMGR_ALWAYS_ON</td><td>With this selection, there is no power savings and the device is most likely on mains power. (选择此项不省电，设备很可能使用市电。)</td></tr>
+<tr><td>PWRMGR_BATTERY</td><td>Turns power savings on. (开启省电。)</td></tr>
+</tbody>
+</table>
+</div>
+<h4 id="944-return-返回值"><a class="header" href="#944-return-返回值">9.4.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h3 id="95-osal_pwrmgr_task_state-"><a class="header" href="#95-osal_pwrmgr_task_state-">9.5 osal_pwrmgr_task_state( )</a></h3>
+<h4 id="951-description-描述"><a class="header" href="#951-description-描述">9.5.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function is called by each task to state whether or not this task wants to conserve power. The task will call this function to vote whether it wants the OSAL to conserve power or it wants to hold off on the power savings. By default, when a task is created, its own power state is set to conserve. If the task always wants to converse power, it does not need to call this function at all.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数由每个任务调用，以声明此任务是否希望省电。任务将调用此函数来表决它希望 OSAL 省电还是希望暂缓省电。默认情况下，当任务创建时，其自身的电源状态设置为省电。如果任务始终希望省电，则完全不需要调用此函数。</p>
+<h4 id="952-prototype-原型"><a class="header" href="#952-prototype-原型">9.5.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_pwrmgr_task_state(uint8 task_id, uint8 state );
+</code></pre>
+<h4 id="953-parameter-details-参数详情"><a class="header" href="#953-parameter-details-参数详情">9.5.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>state</code> : changes a task’s power state. (更改任务的电源状态。)</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Type (类型)</th><th>Description (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>PWRMGR_CONSERVE</td><td>Turns power savings on, all tasks have to agree. This is the default state when a task is initialized. (开启省电，所有任务必须同意。这是任务初始化时的默认状态。)</td></tr>
+<tr><td>PWRMGR_HOLD</td><td>Turns power savings off. (关闭省电。)</td></tr>
+</tbody>
+</table>
+</div>
+<h4 id="954-return-返回值"><a class="header" href="#954-return-返回值">9.5.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>INVALID_TASK</td><td>Invalid Task (无效的任务)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="10-non-volatile-memory-api-非易失性存储器api"><a class="header" href="#10-non-volatile-memory-api-非易失性存储器api">10. Non-Volatile Memory API (非易失性存储器API)</a></h2>
+<h3 id="101-introduction-简介"><a class="header" href="#101-introduction-简介">10.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This section describes the OSAL Non-Volatile (NV) memory system. The system provides a way for applications to store information into the device’s memory persistently. It is also used by the stack for persistent storage of certain items required by the ZigBee specification. The NV functions are designed to read and write user-defined items consisting of arbitrary data types such as structures or arrays. The user can read or write an entire item or an element of the item by setting the appropriate offset and length. The API is independent of the NV storage medium and can be implemented for flash or EEPROM.
+Each NV item has a unique ID. There is a specific ID value range for applications while some ID values are reserved or used by the stack or platform. If your application creates its own NV item, it must select an ID from the Application value range. See the table below.</p>
+</blockquote>
+<p><strong>中文：</strong> 本节描述 OSAL 非易失性 (NV) 存储系统。该系统为应用程序提供了一种将信息持久存储到设备内存中的方法。它也由协议栈用于持久存储 ZigBee 规范所需的某些项目。NV 函数旨在读取和写入由任意数据类型（如结构体或数组）组成的用户定义项目。用户可以通过设置适当的偏移量和长度来读取或写入整个项目或项目的一个元素。该 API 独立于 NV 存储介质，可以为闪存或 EEPROM 实现。
+每个 NV 项目都有一个唯一的 ID。应用程序有一个特定的 ID 值范围，而某些 ID 值由协议栈或平台保留或使用。如果您的应用程序创建自己的 NV 项目，则必须从应用程序值范围中选择一个 ID。请参见下表。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>VALUE (值)</th><th>USER (用户)</th></tr>
+</thead>
+<tbody>
+<tr><td>0x0000</td><td>Reserved (保留)</td></tr>
+<tr><td>0x0001 – 0x0020</td><td>OSAL</td></tr>
+<tr><td>0x0021 – 0x0040</td><td>NWK</td></tr>
+<tr><td>0x0041 – 0x0060</td><td>APS</td></tr>
+<tr><td>0x0061 – 0x0080</td><td>Security (安全)</td></tr>
+<tr><td>0x0081 – 0x00B0</td><td>ZDO</td></tr>
+<tr><td>0x00B1 – 0x00E0</td><td>Commissioning SAS (调试 SAS)</td></tr>
+<tr><td>0x00E1 – 0x0100</td><td>Reserved (保留)</td></tr>
+<tr><td>0x0101 – 0x01FF</td><td>Trust Center Link Keys (信任中心链接密钥)</td></tr>
+<tr><td>0x0201 – 0x0300</td><td>ZigBee-Pro: APS Links Keys / ZigBee-RF4CE: network layer (ZigBee-Pro: APS 链接密钥 / ZigBee-RF4CE: 网络层)</td></tr>
+<tr><td>0x0301 – 0x0400</td><td>ZigBee-Pro: Master Keys / ZigBee-RF4CE: app framework (ZigBee-Pro: 主密钥 / ZigBee-RF4CE: 应用程序框架)</td></tr>
+<tr><td>0x0401 – 0x0FFF</td><td>Application (应用程序)</td></tr>
+<tr><td>0x1000 -0xFFFF</td><td>Reserved (保留)</td></tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>There are some important considerations when using this API:</p>
+<ol>
+<li>These are blocking function calls and an operation may take several milliseconds to complete. This is especially true for NV write operations. In addition, interrupts may be disabled for several milliseconds. It is best to execute these functions at times when they do not conflict with other timing-critical operations. For example, a good time to write NV items would be when the receiver is turned off.</li>
+<li>Try to perform NV writes infrequently. It takes time and power; also most flash devices have a limited number of erase cycles.</li>
+<li>If the structure of one or more NV items changes, especially when upgrading from one version of a TI stack software to another, it is necessary to erase and re-initialize the NV memory. Otherwise, read and write operations on NV items that changed will fail or produce erroneous results.</li>
+</ol>
+</blockquote>
+<p><strong>中文：</strong> 使用此 API 时有一些重要的注意事项：</p>
+<ol>
+<li>这些都是阻塞性函数调用，操作可能需要几毫秒才能完成。对于 NV 写操作尤其如此。此外，中断可能会被禁用几毫秒。最好在不与其他时间关键操作冲突时执行这些函数。例如，写入 NV 项目的好时机是当接收器关闭时。</li>
+<li>尽量不要频繁执行 NV 写操作。这需要时间和功耗；此外，大多数闪存设备的擦除周期次数有限。</li>
+<li>如果一个或多个 NV 项目的结构发生变化，尤其是在从一个版本的 TI 协议栈软件升级到另一个版本时，必须擦除并重新初始化 NV 存储器。否则，对已更改的 NV 项目的读写操作将失败或产生错误结果。</li>
+</ol>
+<hr>
+<h3 id="102-osal_nv_item_init-"><a class="header" href="#102-osal_nv_item_init-">10.2 osal_nv_item_init( )</a></h3>
+<h4 id="1021-description-描述"><a class="header" href="#1021-description-描述">10.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>Initialize an item in NV. This function checks for the presence of an item in NV. If it does not exist, it is created and initialized with the data passed to the function, if any.
+This function must be called for each item before calling <code>osal_nv_read()</code> or <code>osal_nv_write()</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 在 NV 中初始化一个项目。此函数检查 NV 中是否存在某个项目。如果不存在，则创建它，并（如果有）使用传递给函数的数据进行初始化。
+在调用 <code>osal_nv_read()</code> 或 <code>osal_nv_write()</code> 之前，必须为每个项目调用此函数。</p>
+<h4 id="1022-prototype-原型"><a class="header" href="#1022-prototype-原型">10.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_nv_item_init( uint16 id, uint16 len, void *buf );
+</code></pre>
+<h4 id="1023-parameter-details-参数详情"><a class="header" href="#1023-parameter-details-参数详情">10.2.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>id</code> : User-defined item ID. (用户定义的项目 ID。)</li>
+<li><code>len</code> : Item length in bytes. (项目长度，以字节为单位。)</li>
+<li><code>*buf</code> : Pointer to item initialization data. If no initialization data, set to NULL. (指向项目初始化数据的指针。如果没有初始化数据，设置为 NULL。)</li>
+</ul>
+<h4 id="1024-return-返回值"><a class="header" href="#1024-return-返回值">10.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>NV_ITEM_UNINIT</td><td>Success but item did not exist (成功，但项目不存在)</td></tr>
+<tr><td>NV_OPER_FAILED</td><td>Operation failed (操作失败)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="103-osal_nv_read-"><a class="header" href="#103-osal_nv_read-">10.3 osal_nv_read( )</a></h3>
+<h4 id="1031-description-描述"><a class="header" href="#1031-description-描述">10.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>Read data from NV. This function can be used to read an entire item from NV or an element of an item by indexing into the item with an offset. Read data is copied into <code>*buf</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 从 NV 读取数据。此函数可用于从 NV 读取整个项目，或通过使用偏移量索引到项目中来读取项目的一个元素。读取的数据被复制到 <code>*buf</code> 中。</p>
+<h4 id="1032-prototype-原型"><a class="header" href="#1032-prototype-原型">10.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_nv_read( uint16 id, uint16 offset, uint16 len, void *buf );
+</code></pre>
+<h4 id="1033-parameter-details-参数详情"><a class="header" href="#1033-parameter-details-参数详情">10.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>id</code> : User-defined item ID. (用户定义的项目 ID。)</li>
+<li><code>offset</code> : Memory offset into item in bytes. (项目内的内存偏移量，以字节为单位。)</li>
+<li><code>len</code> : Item length in bytes. (项目长度，以字节为单位。)</li>
+<li><code>*buf</code> : Data is read into this buffer. (数据被读入此缓冲区。)</li>
+</ul>
+<h4 id="1034-return-返回值"><a class="header" href="#1034-return-返回值">10.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>NV_OPER_FAILED</td><td>Operation failed (操作失败)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="104-osal_nv_write-"><a class="header" href="#104-osal_nv_write-">10.4 osal_nv_write( )</a></h3>
+<h4 id="1041-description-描述"><a class="header" href="#1041-description-描述">10.4.1 Description (描述)</a></h4>
+<blockquote>
+<p>Write data to NV. This function can be used to write an entire item to NV or an element of an item by indexing into the item with an offset.</p>
+</blockquote>
+<p><strong>中文：</strong> 向 NV 写入数据。此函数可用于将整个项目写入 NV，或通过使用偏移量索引到项目中来写入项目的一个元素。</p>
+<h4 id="1042-prototype-原型"><a class="header" href="#1042-prototype-原型">10.4.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_nv_write( uint16 id, uint16 offset, uint16 len, void *buf );
+</code></pre>
+<h4 id="1043-parameter-details-参数详情"><a class="header" href="#1043-parameter-details-参数详情">10.4.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>id</code> : User-defined item ID. (用户定义的项目 ID。)</li>
+<li><code>offset</code> : Memory offset into item in bytes. (项目内的内存偏移量，以字节为单位。)</li>
+<li><code>len</code> : Item length in bytes. (项目长度，以字节为单位。)</li>
+<li><code>*buf</code> : Data to write. (要写入的数据。)</li>
+</ul>
+<h4 id="1044-return-返回值"><a class="header" href="#1044-return-返回值">10.4.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>NV_ITEM_UNINIT</td><td>Item is not initialized (项目未初始化)</td></tr>
+<tr><td>NV_OPER_FAILED</td><td>Operation failed (操作失败)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="105-osal_nv_delete-"><a class="header" href="#105-osal_nv_delete-">10.5 osal_nv_delete( )</a></h3>
+<h4 id="1051-description-描述"><a class="header" href="#1051-description-描述">10.5.1 Description (描述)</a></h4>
+<blockquote>
+<p>Delete an item from NV. This function checks for the presence of the item in NV. If the item exists and its length matches the length provided in the function call, the item will be removed from NV.</p>
+</blockquote>
+<p><strong>中文：</strong> 从 NV 中删除一个项目。此函数检查 NV 中是否存在该项目。如果项目存在并且其长度与函数调用中提供的长度匹配，则该项目将从 NV 中删除。</p>
+<h4 id="1052-prototype-原型"><a class="header" href="#1052-prototype-原型">10.5.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_nv_delete( uint16 id, uint16 len );
+</code></pre>
+<h4 id="1053-parameter-details-参数详情"><a class="header" href="#1053-parameter-details-参数详情">10.5.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>id</code> : User-defined item ID. (用户定义的项目 ID。)</li>
+<li><code>len</code> : Item length in bytes. (项目长度，以字节为单位。)</li>
+</ul>
+<h4 id="1054-return-返回值"><a class="header" href="#1054-return-返回值">10.5.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>NV_ITEM_UNINIT</td><td>Item is not initialized (项目未初始化)</td></tr>
+<tr><td>NV_BAD_ITEM_LEN</td><td>Incorrect length parameter (不正确的长度参数)</td></tr>
+<tr><td>NV_OPER_FAILED</td><td>Operation failed (操作失败)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="106-osal_nv_item_len-"><a class="header" href="#106-osal_nv_item_len-">10.6 osal_nv_item_len( )</a></h3>
+<h4 id="1061-description-描述"><a class="header" href="#1061-description-描述">10.6.1 Description (描述)</a></h4>
+<blockquote>
+<p>Get length of an item in NV. This function returns the length of an NV item, if found, otherwise zero.</p>
+</blockquote>
+<p><strong>中文：</strong> 获取 NV 中项目的长度。此函数返回 NV 项目的长度（如果找到），否则返回零。</p>
+<h4 id="1062-prototype-原型"><a class="header" href="#1062-prototype-原型">10.6.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint16 osal_nv_item_len( uint16 id );
+</code></pre>
+<h4 id="1063-parameter-details-参数详情"><a class="header" href="#1063-parameter-details-参数详情">10.6.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>id</code> : User-defined item ID. (用户定义的项目 ID。)</li>
+</ul>
+<h4 id="1064-return-返回值"><a class="header" href="#1064-return-返回值">10.6.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>NV item not found (未找到 NV 项目)</td></tr>
+<tr><td>1 - N</td><td>Length of NV item (NV 项目的长度)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="107-osal_offsetof-"><a class="header" href="#107-osal_offsetof-">10.7 osal_offsetof( )</a></h3>
+<h4 id="1071-description-描述"><a class="header" href="#1071-description-描述">10.7.1 Description (描述)</a></h4>
+<blockquote>
+<p>This macro calculates the memory offset in bytes of an element within a structure. It is useful for calculating the offset parameter used by NV API functions.</p>
+</blockquote>
+<p><strong>中文：</strong> 此宏计算结构体中某个元素的内存偏移量（以字节为单位）。这对于计算 NV API 函数使用的偏移量参数非常有用。</p>
+<h4 id="1072-prototype-原型"><a class="header" href="#1072-prototype-原型">10.7.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">osal_offsetof(type, member)
+</code></pre>
+<h4 id="1073-parameter-details-参数详情"><a class="header" href="#1073-parameter-details-参数详情">10.7.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>type</code> : Structure type. (结构体类型。)</li>
+<li><code>member</code> : Structure member. (结构体成员。)</li>
+</ul>
+<hr>
+<h2 id="11-simple-non-volatile-memory-api-简单非易失性存储器api"><a class="header" href="#11-simple-non-volatile-memory-api-简单非易失性存储器api">11. Simple Non-Volatile Memory API (简单非易失性存储器API)</a></h2>
+<h3 id="111-introduction-简介"><a class="header" href="#111-introduction-简介">11.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This section describes the OSAL Simple Non-Volatile memory system. Like the OSAL NV memory system, the Simple NV memory system provides a way for applications to store information into the device’s memory persistently. On the other hand, unlike the OSAL NV memory system, the Simple NV memory system provides much simpler API to drive the application code size and the stack code size down as well as the code size of the OSAL Simple NV system implementation. The user can read or write an entire item, but it cannot partially read or write the item.
+Just like NV memory system, each NV item has a unique ID. There is a specific ID value range for applications while some ID values are reserved or used by the stack or platform. If your application creates its own NV items, it must select an ID from the Application value range. See the table below.
+Note that the table might not apply to a certain custom stack build.</p>
+</blockquote>
+<p><strong>中文：</strong> 本节描述 OSAL 简单非易失性存储系统。与 OSAL NV 存储系统一样，简单 NV 存储系统为应用程序提供了一种将信息持久存储到设备内存中的方法。另一方面，与 OSAL NV 存储系统不同，简单 NV 存储系统提供了更简单的 API，以减少应用程序代码大小、协议栈代码大小以及 OSAL 简单 NV 系统实现的代码大小。用户可以读取或写入整个项目，但不能部分读取或写入项目。
+就像 NV 存储系统一样，每个 NV 项目都有一个唯一的 ID。应用程序有一个特定的 ID 值范围，而某些 ID 值由协议栈或平台保留或使用。如果您的应用程序创建自己的 NV 项目，则必须从应用程序值范围中选择一个 ID。请参见下表。
+请注意，该表可能不适用于某些自定义协议栈构建。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>VALUE (值)</th><th>USER (用户)</th></tr>
+</thead>
+<tbody>
+<tr><td>0x00</td><td>Reserved (保留)</td></tr>
+<tr><td>0x01 – 0x6F</td><td>Reserved for ZigBee RF4CE network layer (为 ZigBee RF4CE 网络层保留)</td></tr>
+<tr><td>0x70 – 0x7F</td><td>Reserved for ZigBee RF4CE application framework (RTI) (为 ZigBee RF4CE 应用程序框架 (RTI) 保留)</td></tr>
+<tr><td>0x80 – 0xFE</td><td>Application (应用程序)</td></tr>
+<tr><td>0xFF</td><td>Reserved (保留)</td></tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>There are some important considerations when using this API:</p>
+<ol>
+<li>These are blocking function calls and an operation may take several hundred milliseconds to complete. This is especially true for NV write operations. In addition, interrupts may be disabled for several milliseconds. It is best to execute these functions at times when they do not conflict with other timing-critical operations. For example, a good time to write NV items would be when the receiver is turned off.</li>
+<li>Furthermore, the functions must not be called from an interrupt service routine, unless otherwise specified by a separate application note or release note of an implementation.</li>
+<li>Try to perform NV writes infrequently. It takes time and power; also most flash devices have a limited number of erase cycles.</li>
+<li>If the structure of one or more NV items changes, especially when upgrading from one version of a TI stack software to another, it is necessary to erase and re-initialize the NV memory. Otherwise, read and write operations on NV items that changed will fail or produce erroneous results.</li>
+</ol>
+</blockquote>
+<p><strong>中文：</strong> 使用此 API 时有一些重要的注意事项：</p>
+<ol>
+<li>这些都是阻塞性函数调用，操作可能需要几百毫秒才能完成。对于 NV 写操作尤其如此。此外，中断可能会被禁用几毫秒。最好在不与其他时间关键操作冲突时执行这些函数。例如，写入 NV 项目的好时机是当接收器关闭时。</li>
+<li>此外，不得从中断服务例程调用这些函数，除非某个实现的单独应用笔记或版本说明另有规定。</li>
+<li>尽量不要频繁执行 NV 写操作。这需要时间和功耗；此外，大多数闪存设备的擦除周期次数有限。</li>
+<li>如果一个或多个 NV 项目的结构发生变化，尤其是在从一个版本的 TI 协议栈软件升级到另一个版本时，必须擦除并重新初始化 NV 存储器。否则，对已更改的 NV 项目的读写操作将失败或产生错误结果。</li>
+</ol>
+<hr>
+<h3 id="112-osal_snv_read-"><a class="header" href="#112-osal_snv_read-">11.2 osal_snv_read( )</a></h3>
+<h4 id="1121-description-描述"><a class="header" href="#1121-description-描述">11.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>Read data from NV. This function can be used to read an entire item from NV. Read data is copied into <code>*pBuf</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 从 NV 读取数据。此函数可用于从 NV 读取整个项目。读取的数据被复制到 <code>*pBuf</code> 中。</p>
+<h4 id="1122-prototype-原型"><a class="header" href="#1122-prototype-原型">11.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_snv_read( osalSnvId_t id, osalSnvLen_t len, void *pBuf );
+</code></pre>
+<h4 id="1123-parameter-details-参数详情"><a class="header" href="#1123-parameter-details-参数详情">11.2.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>id</code> : User-defined item ID. (用户定义的项目 ID。)</li>
+<li><code>len</code> : Item length in bytes. (项目长度，以字节为单位。)</li>
+<li><code>*pBuf</code> : Data is read into this buffer. (数据被读入此缓冲区。)</li>
+</ul>
+<h4 id="1124-return-返回值"><a class="header" href="#1124-return-返回值">11.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation. Note that an attempt to read an item, which was never written before, would result into the <code>NV_OPER_FAILED</code> return code.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。请注意，尝试读取一个之前从未写入过的项目将导致 <code>NV_OPER_FAILED</code> 返回码。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>NV_OPER_FAILED</td><td>Operation failed (操作失败)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="113-osal_snv_write-"><a class="header" href="#113-osal_snv_write-">11.3 osal_snv_write( )</a></h3>
+<h4 id="1131-description-描述"><a class="header" href="#1131-description-描述">11.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>Write data to NV. This function can be used to write an entire item to NV.</p>
+</blockquote>
+<p><strong>中文：</strong> 向 NV 写入数据。此函数可用于将整个项目写入 NV。</p>
+<h4 id="1132-prototype-原型"><a class="header" href="#1132-prototype-原型">11.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_snv_write( osalSnvId_t id, osalSnvLen_t len, void *pBuf );
+</code></pre>
+<h4 id="1133-parameter-details-参数详情"><a class="header" href="#1133-parameter-details-参数详情">11.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>id</code> : User-defined item ID. (用户定义的项目 ID。)</li>
+<li><code>len</code> : Item length in bytes. (项目长度，以字节为单位。)</li>
+<li><code>*pBuf</code> : Data to write. (要写入的数据。)</li>
+</ul>
+<h4 id="1134-return-返回值"><a class="header" href="#1134-return-返回值">11.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Return value indicates the result of the operation. Note that it is allowed to write an item that was never before initialized into the NV system by other means.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回值指示操作的结果。请注意，允许写入一个之前从未通过其他方式初始化到 NV 系统中的项目。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>RETURN VALUE (返回值)</th><th>DESCRIPTION (描述)</th></tr>
+</thead>
+<tbody>
+<tr><td>SUCCESS</td><td>Success (成功)</td></tr>
+<tr><td>NV_OPER_FAILED</td><td>Operation failed (操作失败)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="12-osal-clock-system-osal时钟系统"><a class="header" href="#12-osal-clock-system-osal时钟系统">12. OSAL Clock System (OSAL时钟系统)</a></h2>
+<h3 id="121-introduction-简介"><a class="header" href="#121-introduction-简介">12.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This section describes the OSAL Clock system. The system provides a way to keep date and time for a device. This system will keep the number of seconds since 0 hrs, 0 minutes, 0 seconds on 1 January 2000 UTC. The following two data types/structures are used in this system (defined in <code>OSAL_Clock.h</code>):</p>
+</blockquote>
+<p><strong>中文：</strong> 本节描述 OSAL 时钟系统。该系统为设备提供了一种保持日期和时间的方法。该系统将保持自 UTC 时间 2000 年 1 月 1 日 0 时 0 分 0 秒以来的秒数。该系统使用以下两种数据类型/结构（在 <code>OSAL_Clock.h</code> 中定义）：</p>
+<pre><code class="language-c">// number of seconds since 0 hrs, 0 minutes, 0 seconds, on the
+// 1st of January 2000 UTC
+typedef uint32 UTCTime;
+
+// To be used with
+typedef struct
+{
+    uint8 seconds;  // 0-59
+    uint8 minutes;  // 0-59
+    uint8 hour;     // 0-23
+    uint8 day;      // 0-30
+    uint8 month;    // 0-11
+    uint16 year;    // 2000+
+} UTCTimeStruct;
+</code></pre>
+<blockquote>
+<p>You must enable the <code>OSAL_CLOCK</code> compiler flag to use this feature. In addition, this feature does not maintain time for sleeping devices.</p>
+</blockquote>
+<p><strong>中文：</strong> 必须启用 <code>OSAL_CLOCK</code> 编译器标志才能使用此功能。此外，此功能不为睡眠设备维护时间。</p>
+<hr>
+<h3 id="122-osaltimeupdate-"><a class="header" href="#122-osaltimeupdate-">12.2 osalTimeUpdate( )</a></h3>
+<h4 id="1221-description-描述"><a class="header" href="#1221-description-描述">12.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>Called from <code>osal_run_system()</code> to update the time. This function reads the number of MAC 320usec ticks to maintain the OSAL Clock time. Do not call this function anywhere else.</p>
+</blockquote>
+<p><strong>中文：</strong> 从 <code>osal_run_system()</code> 调用以更新时间。此函数读取 MAC 320 微秒滴答数以维护 OSAL 时钟时间。请勿在其他任何地方调用此函数。</p>
+<h4 id="1222-prototype-原型"><a class="header" href="#1222-prototype-原型">12.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osalTimeUpdate( void );
+</code></pre>
+<h4 id="1223-parameter-details-参数详情"><a class="header" href="#1223-parameter-details-参数详情">12.2.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="1224-return-返回值"><a class="header" href="#1224-return-返回值">12.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h3 id="123-osal_setclock-"><a class="header" href="#123-osal_setclock-">12.3 osal_setClock( )</a></h3>
+<h4 id="1231-description-描述"><a class="header" href="#1231-description-描述">12.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>Call this function to initialize the device’s time.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以初始化设备的时间。</p>
+<h4 id="1232-prototype-原型"><a class="header" href="#1232-prototype-原型">12.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_setClock( UTCTime newTime );
+</code></pre>
+<h4 id="1233-parameter-details-参数详情"><a class="header" href="#1233-parameter-details-参数详情">12.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>newTime</code> : new time in seconds since 0 hrs, 0 minutes, 0 seconds, on 1 January 2000 UTC. (自 UTC 时间 2000 年 1 月 1 日 0 时 0 分 0 秒以来的新时间，以秒为单位。)</li>
+</ul>
+<h4 id="1234-return-返回值"><a class="header" href="#1234-return-返回值">12.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h3 id="124-osal_getclock-"><a class="header" href="#124-osal_getclock-">12.4 osal_getClock( )</a></h3>
+<h4 id="1241-description-描述"><a class="header" href="#1241-description-描述">12.4.1 Description (描述)</a></h4>
+<blockquote>
+<p>Call this function to retrieve the device’s current time.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数以检索设备的当前时间。</p>
+<h4 id="1242-prototype-原型"><a class="header" href="#1242-prototype-原型">12.4.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">UTCTime osal_getClock( void );
+</code></pre>
+<h4 id="1243-parameter-details-参数详情"><a class="header" href="#1243-parameter-details-参数详情">12.4.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="1244-return-返回值"><a class="header" href="#1244-return-返回值">12.4.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Current time, in seconds since zero hrs, 0 minutes, 0 seconds, on 1 January 2000 UTC.</p>
+</blockquote>
+<p><strong>中文：</strong> 当前时间，自 UTC 时间 2000 年 1 月 1 日 0 时 0 分 0 秒以来的秒数。</p>
+<hr>
+<h3 id="125-osal_convertutctime-"><a class="header" href="#125-osal_convertutctime-">12.5 osal_ConvertUTCTime( )</a></h3>
+<h4 id="1251-description-描述"><a class="header" href="#1251-description-描述">12.5.1 Description (描述)</a></h4>
+<blockquote>
+<p>Call this function to convert <code>UTCTime</code> to <code>UTCTimeStruct</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数将 <code>UTCTime</code> 转换为 <code>UTCTimeStruct</code>。</p>
+<h4 id="1252-prototype-原型"><a class="header" href="#1252-prototype-原型">12.5.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void osal_ConvertUTCTime( UTCTimeStruct * tm, UTCTime secTime );
+</code></pre>
+<h4 id="1253-parameter-details-参数详情"><a class="header" href="#1253-parameter-details-参数详情">12.5.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>secTime</code> : time in seconds since 0 hrs, 0 minutes, 0 seconds, on 1 January 2000 UTC. (自 UTC 时间 2000 年 1 月 1 日 0 时 0 分 0 秒以来的时间，以秒为单位。)</li>
+<li><code>tm</code> : pointer to time structure. (指向时间结构体的指针。)</li>
+</ul>
+<h4 id="1254-return-返回值"><a class="header" href="#1254-return-返回值">12.5.4 Return (返回值)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<hr>
+<h3 id="126-osal_convertutcsecs-"><a class="header" href="#126-osal_convertutcsecs-">12.6 osal_ConvertUTCSecs( )</a></h3>
+<h4 id="1261-description-描述"><a class="header" href="#1261-description-描述">12.6.1 Description (描述)</a></h4>
+<blockquote>
+<p>Call this function to convert <code>UTCTimeStruct</code> to <code>UTCTime</code>.</p>
+</blockquote>
+<p><strong>中文：</strong> 调用此函数将 <code>UTCTimeStruct</code> 转换为 <code>UTCTime</code>。</p>
+<h4 id="1262-prototype-原型"><a class="header" href="#1262-prototype-原型">12.6.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">UTCTime osal_ConvertUTCSecs( UTCTimeStruct * tm );
+</code></pre>
+<h4 id="1263-parameter-details-参数详情"><a class="header" href="#1263-parameter-details-参数详情">12.6.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>tm</code> : pointer to time structure. (指向时间结构体的指针。)</li>
+</ul>
+<h4 id="1264-return-返回值"><a class="header" href="#1264-return-返回值">12.6.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Converted time, in seconds since 0 hrs, 0 minutes, 0 seconds, on 1 January 2000 UTC.</p>
+</blockquote>
+<p><strong>中文：</strong> 转换后的时间，自 UTC 时间 2000 年 1 月 1 日 0 时 0 分 0 秒以来的秒数。</p>
+<hr>
+<h2 id="13-osal-misc-osal杂项"><a class="header" href="#13-osal-misc-osal杂项">13. OSAL Misc (OSAL杂项)</a></h2>
+<h3 id="131-introduction-简介"><a class="header" href="#131-introduction-简介">13.1 Introduction (简介)</a></h3>
+<blockquote>
+<p>This section describes miscellaneous OSAL functions that do not fit into the previous OSAL categories.</p>
+</blockquote>
+<p><strong>中文：</strong> 本节描述不属于前面 OSAL 类别的杂项 OSAL 函数。</p>
+<h3 id="132-osal_rand-"><a class="header" href="#132-osal_rand-">13.2 osal_rand( )</a></h3>
+<h4 id="1321-description-描述"><a class="header" href="#1321-description-描述">13.2.1 Description (描述)</a></h4>
+<blockquote>
+<p>This function returns a 16-bit random number.</p>
+</blockquote>
+<p><strong>中文：</strong> 此函数返回一个 16 位随机数。</p>
+<h4 id="1322-prototype-原型"><a class="header" href="#1322-prototype-原型">13.2.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint16 osal_rand( void );
+</code></pre>
+<h4 id="1323-parameter-details-参数详情"><a class="header" href="#1323-parameter-details-参数详情">13.2.3 Parameter Details (参数详情)</a></h4>
+<blockquote>
+<p>None.</p>
+</blockquote>
+<p><strong>中文：</strong> 无。</p>
+<h4 id="1324-return-返回值"><a class="header" href="#1324-return-返回值">13.2.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Returns a random number.</p>
+</blockquote>
+<p><strong>中文：</strong> 返回一个随机数。</p>
+<hr>
+<h3 id="133-osal_memcmp-"><a class="header" href="#133-osal_memcmp-">13.3 osal_memcmp( )</a></h3>
+<h4 id="1331-description-描述"><a class="header" href="#1331-description-描述">13.3.1 Description (描述)</a></h4>
+<blockquote>
+<p>Compare to memory sections.</p>
+</blockquote>
+<p><strong>中文：</strong> 比较两个内存区域。</p>
+<h4 id="1332-prototype-原型"><a class="header" href="#1332-prototype-原型">13.3.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">uint8 osal_memcmp( const void GENERIC *src1, const void GENERIC *src2,
+                    unsigned int len );
+</code></pre>
+<h4 id="1333-parameter-details-参数详情"><a class="header" href="#1333-parameter-details-参数详情">13.3.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>src1</code> : memory compare location 1. (内存比较位置1。)</li>
+<li><code>src2</code> : memory compare location 2. (内存比较位置2。)</li>
+<li><code>len</code> : length of compare. (比较的长度。)</li>
+</ul>
+<h4 id="1334-return-返回值"><a class="header" href="#1334-return-返回值">13.3.4 Return (返回值)</a></h4>
+<blockquote>
+<p>TRUE - same, FALSE - different.</p>
+</blockquote>
+<p><strong>中文：</strong> TRUE - 相同，FALSE - 不同。</p>
+<hr>
+<h3 id="134-osal_memset-"><a class="header" href="#134-osal_memset-">13.4 osal_memset( )</a></h3>
+<h4 id="1341-description-描述"><a class="header" href="#1341-description-描述">13.4.1 Description (描述)</a></h4>
+<blockquote>
+<p>Sets a buffer to a specific value.</p>
+</blockquote>
+<p><strong>中文：</strong> 将缓冲区设置为特定值。</p>
+<h4 id="1342-prototype-原型"><a class="header" href="#1342-prototype-原型">13.4.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void *osal_memset( void *dest, uint8 value, int len );
+</code></pre>
+<h4 id="1343-parameter-details-参数详情"><a class="header" href="#1343-parameter-details-参数详情">13.4.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>dest</code> : memory buffer to set “value” to. (要设置为“value”的内存缓冲区。)</li>
+<li><code>value</code> : what to set each byte of “dest”. (要设置“dest”每个字节的值。)</li>
+<li><code>len</code> : length to set “value” in “dest”. (在“dest”中设置“value”的长度。)</li>
+</ul>
+<h4 id="1344-return-返回值"><a class="header" href="#1344-return-返回值">13.4.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Pointer to where in the buffer this function stopped.</p>
+</blockquote>
+<p><strong>中文：</strong> 指向此函数在缓冲区中停止位置的指针。</p>
+<hr>
+<h3 id="135-osal_memcpy-"><a class="header" href="#135-osal_memcpy-">13.5 osal_memcpy( )</a></h3>
+<h4 id="1351-description-描述"><a class="header" href="#1351-description-描述">13.5.1 Description (描述)</a></h4>
+<blockquote>
+<p>Copies one buffer to another buffer.</p>
+</blockquote>
+<p><strong>中文：</strong> 将一个缓冲区复制到另一个缓冲区。</p>
+<h4 id="1352-prototype-原型"><a class="header" href="#1352-prototype-原型">13.5.2 Prototype (原型)</a></h4>
+<pre><code class="language-c">void *osal_memcpy( void *dst, const void GENERIC *src, unsigned int len );
+</code></pre>
+<h4 id="1353-parameter-details-参数详情"><a class="header" href="#1353-parameter-details-参数详情">13.5.3 Parameter Details (参数详情)</a></h4>
+<ul>
+<li><code>dst</code> : destination buffer. (目标缓冲区。)</li>
+<li><code>src</code> : source buffer. (源缓冲区。)</li>
+<li><code>len</code> : length of copy. (复制的长度。)</li>
+</ul>
+<h4 id="1354-return-返回值"><a class="header" href="#1354-return-返回值">13.5.4 Return (返回值)</a></h4>
+<blockquote>
+<p>Pointer to end of destination buffer.</p>
+</blockquote>
+<p><strong>中文：</strong> 指向目标缓冲区末尾的指针。</p>
+<hr>
+<p><strong>版权所有 © 2005-2011 Texas Instruments, Inc. 保留所有权利。</strong></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="keil-使用相关问题处理"><a class="header" href="#keil-使用相关问题处理">Keil 使用相关问题处理</a></h1>
 <h2 id="1-同名源文件导致的烦人的提示"><a class="header" href="#1-同名源文件导致的烦人的提示">1. 同名源文件导致的烦人的提示</a></h2>
