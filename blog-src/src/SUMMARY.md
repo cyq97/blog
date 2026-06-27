@@ -31,7 +31,8 @@
     - [AT32F403A 引脚笔记](./mcu/hardware/at32-at32f403a-pins.md)
   - [RTOS]()
     - [Threadx 内核移植 AT32F403A Keil5-AC5](./mcu/rtos/threadx-kernel-porting-on-at32f403a-keil5ac5.md)
-  
+    - [TI OSAL 非RTOS调度器](./mcu/rtos/ti-osal.md)
+    
   - [问题处理笔记]()
     - [Keil 使用相关问题处理](./mcu/problem-handling-notes/keil-problem-handling.md)
   
